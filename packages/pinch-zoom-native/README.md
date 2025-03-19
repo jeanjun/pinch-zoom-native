@@ -1,1 +1,1 @@
-# zoom
+# pinch-zoom-native
