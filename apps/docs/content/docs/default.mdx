@@ -1,0 +1,21 @@
+---
+title: Default
+description: "Basic Usage of pinch-zoom-native"
+---
+
+import { Wrapper } from '@/components/preview/wrapper'
+import { PinchZoom } from '@/components/preview/lazy'
+
+<Wrapper className="relative z-10 p-0">
+  <PinchZoom>
+    <img src="/default.jpg" className="!my-0 rounded-lg" />
+  </PinchZoom>
+</Wrapper>
+
+```tsx
+import { PinchZoom } from 'pinch-zoom-native'
+
+<PinchZoom>
+  <img src="image.jpg" alt="" />
+</PinchZoom>
+```

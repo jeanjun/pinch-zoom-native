@@ -1,0 +1,14 @@
+{
+  "root": true,
+  "pages": [
+    "---Getting Started---",
+    "vanilla",
+    "react",
+    "---API---",
+    "commands",
+    "---Examples---",
+    "default",
+    "Pan",
+    "Swipe"
+  ]
+}

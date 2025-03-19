@@ -1,0 +1,23 @@
+---
+title: Pan
+description: "Persistent pinch-zoom-native with Panning"
+---
+
+import { Wrapper } from '@/components/preview/wrapper'
+import { PinchZoom } from '@/components/preview/lazy'
+
+<Wrapper className="relative z-10 p-0 overflow-hidden">
+  <PinchZoom maxScale={3}>
+    <img src="/pan.jpg" className="!my-0 rounded-lg" />
+  </PinchZoom>
+</Wrapper>
+
+```tsx
+import { PinchZoom } from 'pinch-zoom-native'
+
+<div className="overflow-hidden">
+  <PinchZoom maxScale={3}>
+    <img src="image.jpg" alt="" />
+  </PinchZoom>
+</div>
+```

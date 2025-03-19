@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",    
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationDir": "types",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/**/*",
+    "../global.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spce.ts"
+  ]
+}
