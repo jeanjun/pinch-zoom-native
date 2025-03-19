@@ -1,6 +1,6 @@
-# zoom
+# pinch-zoom-native
 
-🖼️ 🔍 zoom is a library that enables natural image zoom in/out gestures.
+🖼️ 🔍 pinch-zoom-native is a library that enables natural image zoom in/out gestures.
 
 ## Setup and Running
 ```bash
