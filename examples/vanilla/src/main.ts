@@ -4,7 +4,7 @@ const zoomer = pinchZoom(document.querySelector('img')!, {
   onZoomStart: () => {
     // console.log('onZoomStart')
   },
-  onZoomUpdate: ({ camera }) => {
+  onZoomUpdate: () => {
     // console.log('onZoomUpdate', camera)
   },
   onZoomEnd: () => {
