@@ -17,6 +17,7 @@ export const transform = (shared: Shared) => (options: Partial<Options>) => (
     shared.isAnimating = !!animation
 
     styles(element, {
+      willChange: 'transform',
       transform: `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`,
       transformOrigin: '0 0',
       transition: 

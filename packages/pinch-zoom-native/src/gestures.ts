@@ -29,15 +29,19 @@ const PINCH_POINTER_COUNT = 2
 
 export const createGestures = (shared: Shared) => {
   const { options } = shared
-  let attached = false
-
-  const { minScale, maxScale, maxScalebounce } = options
+  const {
+    initialScale,
+    minScale,
+    maxScale,
+    maxScalebounce
+  } = options
 
   const pinchState = {
     distance: 0,
     midPoint: { x: 0, y: 0 },
     initialCamera: { x: 0, y: 0, scale: 1 },
-    relativePoint: { x: 0, y: 0 }
+    relativePoint: { x: 0, y: 0 },
+    startCamera: { x: 0, y: 0, scale: 1 }
   }
 
   const dragState = {
@@ -46,6 +50,8 @@ export const createGestures = (shared: Shared) => {
     lastY: 0
   }
 
+  let attached = false
+
   const onZoomStart = (event: TouchEvent, camera: Camera) => {
     options?.onZoomStart({ nativeEvent: event, camera })
   }
@@ -53,7 +59,11 @@ export const createGestures = (shared: Shared) => {
   const onZoomUpdate = (event: TouchEvent, camera: Camera) => {
     shared.isZooming = true
 
-    styles(shared.wrapper, { overflow: '' })
+    styles(shared.wrapper, {
+      overflow: '',
+      touchAction: 'none'
+    })
+
     shared.instance.transform(camera)
 
     options?.onZoomUpdate({ nativeEvent: event, camera })
@@ -64,7 +74,7 @@ export const createGestures = (shared: Shared) => {
       return
     }
 
-    if (camera.scale < minScale) {
+    if (camera.scale < initialScale) {
       await resetToMinZoom()
     }
 
@@ -72,22 +82,51 @@ export const createGestures = (shared: Shared) => {
       await resetToMaxZoom()
     }
 
-    if (camera.scale > minScale) {
+    if (camera.scale > minScale && camera.scale > initialScale) {
       await switchToScrollMode()
     }
 
     shared.isZooming = false
+    styles(shared.wrapper, {
+      touchAction: '',
+      overflow: 'auto'
+    })
+
     options?.onZoomEnd({ nativeEvent: event, camera })
   }
 
-  const resetToMinZoom = () => (
-    shared.instance.transform({
+  const resetToMinZoom = async () => {
+    await shared.instance.transform({
+      // x: pinchState.midPoint.x - initialScale * pinchState.relativePoint.x,
       x: 0,
-      y: 0,
-      scale: minScale,
+      y: pinchState.midPoint.y - initialScale * pinchState.relativePoint.y,
+      scale: initialScale,
       animation: true
     })
-  )
+  
+    await shared.instance.transform({
+      x: 0,
+      y: 0,
+      scale: initialScale,
+    })
+  
+    styles(shared.wrapper, { overflow: 'auto' })
+    // shared.wrapper.scrollLeft = Math.abs(
+    //   pinchState.midPoint.x - initialScale * pinchState.relativePoint.x
+    // )
+    shared.wrapper.scrollLeft = Math.abs(
+      pinchState.midPoint.x - initialScale * pinchState.relativePoint.x
+    ) 
+    shared.wrapper.scrollTop = Math.abs(
+      pinchState.midPoint.y - initialScale * pinchState.relativePoint.y
+    )
+  
+    shared.camera = {
+      x: -shared.wrapper.scrollLeft,
+      y: -shared.wrapper.scrollTop,
+      scale: initialScale
+    }
+  }
 
   const resetToMaxZoom = () => (
     shared.instance.transform({
@@ -154,6 +193,7 @@ export const createGestures = (shared: Shared) => {
       pinchState.distance = getDistance(point1, point2)
       pinchState.midPoint = getMidPoint(point1, point2)
       pinchState.initialCamera = { ...shared.camera }
+      pinchState.startCamera = { ...shared.camera }
       pinchState.relativePoint = {
         x: (pinchState.midPoint.x - pinchState.initialCamera.x) / pinchState.initialCamera.scale,
         y: (pinchState.midPoint.y - pinchState.initialCamera.y) / pinchState.initialCamera.scale
@@ -174,11 +214,15 @@ export const createGestures = (shared: Shared) => {
       const distance = getDistance(point1, point2)
       const midPoint = getMidPoint(point1, point2)
       const newScale = Math.min(
-        pinchState.initialCamera.scale * (distance / pinchState.distance),
+        Math.max(
+          pinchState.initialCamera.scale * (distance / pinchState.distance),
+          minScale
+        ),
         maxScale + maxScalebounce
       )
-      const newX = midPoint.x - newScale * pinchState.relativePoint.x
-      const newY = midPoint.y - newScale * pinchState.relativePoint.y
+
+      let newX = midPoint.x - newScale * pinchState.relativePoint.x
+      let newY = midPoint.y - newScale * pinchState.relativePoint.y
 
       onZoomUpdate(event, {
         x: newX,
@@ -238,10 +282,12 @@ export const createGestures = (shared: Shared) => {
   }
 
   const handleScroll = () => {
+    const scrollX = shared.wrapper.scrollLeft
+    const scrollY = shared.wrapper.scrollTop
     shared.camera = {
       ...shared.camera,
-      x: -shared.wrapper.scrollLeft,
-      y: -shared.wrapper.scrollTop
+      x: -scrollX,
+      y: -scrollY
     }
   }
 
@@ -284,6 +330,7 @@ export const createGestures = (shared: Shared) => {
     // document.addEventListener('mouseup', handleMouseUp)
 
     shared.wrapper.addEventListener('scroll', handleScroll)
+
     // shared.wrapper.addEventListener('wheel', handleWheel)
 
     attached = true

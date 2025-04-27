@@ -23,12 +23,13 @@ export namespace zoomEvents {
 }
 
 export type PinchZoomOptions = {
+  initialScale: number
   minScale: number
   maxScale: number
   maxScalebounce: number
   x: number 
   y: number
-  scale: number
+  scrollParent: HTMLElement
   onZoomStart: (event: zoomEvents.zoomStart) => void
   onZoomUpdate: (event: zoomEvents.zoomUpdate) => void
   onZoomEnd: (event: zoomEvents.zoomEnd) => void
