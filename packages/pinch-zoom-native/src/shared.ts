@@ -27,9 +27,9 @@ export type PinchZoomOptions = {
   minScale: number
   maxScale: number
   maxScalebounce: number
+  hasScroll: boolean
   x: number 
   y: number
-  scrollParent: HTMLElement
   onZoomStart: (event: zoomEvents.zoomStart) => void
   onZoomUpdate: (event: zoomEvents.zoomUpdate) => void
   onZoomEnd: (event: zoomEvents.zoomEnd) => void

@@ -1,4 +1,4 @@
-export const styles = <T>(
+export const setStyles = <T>(
   element: HTMLElement,
   styles: { [key: string]: T }
 ): void => {

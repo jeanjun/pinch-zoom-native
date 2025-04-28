@@ -1,38 +1,44 @@
-import { assign } from '../helpers/assign'
-import { styles } from '../helpers/styles'
+import { assign } from '../lib/utils'
+import { setStyles } from '../lib/setStyles'
+
 import type { Shared } from '../shared'
 
 type Options = {
   x: number
   y: number
   scale: number
-  animation?: boolean
+  animate?: boolean
 }
 
-export const transform = (shared: Shared) => (options: Partial<Options>) => (
-  new Promise<void>((resolve) => {
-    const { element } = shared
-    const { x, y, scale, animation } = assign(shared.camera, options)
-    shared.camera = { x, y, scale }
-    shared.isAnimating = !!animation
+export const transform = (shared: Shared) => (options: Partial<Options>) => {
+  return (
+    new Promise<void>((resolve) => {
+      const { element } = shared
+      const { animate, ...camera } = options
+      shared.camera = assign(shared.camera, camera)
+      shared.isAnimating = animate ?? false
 
-    styles(element, {
-      willChange: 'transform',
-      transform: `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`,
-      transformOrigin: '0 0',
-      transition: 
-        shared.isAnimating
-          ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' 
-          : ''
-    })
+      const { x, y, scale } = camera
+  
+      setStyles(element, {
+        transform: `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`,
+        transformOrigin: '0 0',
+        willChange: animate ? 'transform' : '',
+        transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : ''
+      })
 
-    if (animation) {
-      element.addEventListener('transitionend', () => {
-        resolve()
+      const handleTransitionEnd = () => {
+        element.removeEventListener('transitionend', handleTransitionEnd)
         shared.isAnimating = false
-      }, { once: true })
-    } else {
-      resolve()
-    }
-  })
-)
+        setStyles(element, { willChange: '' })
+        resolve()
+      }
+  
+      if (animate) {
+        element.addEventListener('transitionend', handleTransitionEnd, { once: true })
+      } else {
+        resolve()
+      }
+    })    
+  )
+}

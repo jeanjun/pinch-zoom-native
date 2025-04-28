@@ -11,13 +11,12 @@ const removeWrapper = (wrapper: HTMLElement, element: HTMLElement) => {
 }
 
 export const destroy = (shared: Shared) => () => {
-  // remove event listeners
-  shared.instance.detach()
-  // remove wrapper
+  shared.instance.detachGesture()
+  
   const { wrapper, element } = shared
   wrapper.parentNode?.insertBefore(element, wrapper)
   wrapper.parentNode?.removeChild(wrapper)
-  // reset shared
+
   shared.instance = null as any
   shared.wrapper = null as any
   shared.element = null as any

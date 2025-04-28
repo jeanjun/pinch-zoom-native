@@ -1,10 +1,10 @@
 import { version } from '.'
-import { assign } from './helpers/assign'
+import { assign } from './lib/utils'
 import { createCommands } from './commands/createCommands'
 import { Camera, createShared, type PinchZoomInstance, type PinchZoomOptions } from './shared'
 import { createGestures } from './gestures'
-import { warn } from './helpers/warn'
-import { styles } from './helpers/styles'
+import { warn } from './lib/warn'
+import { setStyles } from './lib/setStyles'
 
 const createObject = <T extends object, P extends object>(
   proto: T,
@@ -13,11 +13,16 @@ const createObject = <T extends object, P extends object>(
   Object.create(proto, Object.getOwnPropertyDescriptors(props))
 )
 
-const createWrapper = (element: HTMLElement) => {
+const createWrapper = (element: HTMLElement, hasScroll: boolean) => {
   const wrapper = document.createElement('div')
   wrapper.classList.add('zoom-wrapper')
-  wrapper.style.height = '100%'
-  wrapper.style.overflow = 'auto'
+
+  if (hasScroll) {
+    setStyles(wrapper, {
+      height: '100%',
+      overflow: 'auto'
+    })
+  }
 
   if (element.parentNode) {
     element.parentNode.insertBefore(wrapper, element)
@@ -33,7 +38,7 @@ export const pinchZoom = (
   options: Partial<PinchZoomOptions> = {}
 ) => {
   const shared = createShared()
-  shared.wrapper = createWrapper(element)
+  shared.wrapper = createWrapper(element, !!options.hasScroll)
   shared.element = element
   shared.options = assign({
     x: 0,
@@ -42,7 +47,7 @@ export const pinchZoom = (
     minScale: 0.125,
     maxScale: 1,
     maxScalebounce: 2,
-    scrollParent: shared.wrapper,
+    hasScroll: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},
     onZoomEnd: () => {}
@@ -63,10 +68,9 @@ export const pinchZoom = (
     }
   }))
 
-  // initialize
   const { x, y, initialScale } = shared.options
   instance.transform({ x, y, scale: initialScale })
-  instance.attach()
+  instance.attachGesture()
 
   return instance
 }

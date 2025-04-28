@@ -1,10 +1,10 @@
 // From: ChatGPT o3-mini
-
 const isObject = (item: unknown): item is Record<string, unknown> =>
   item !== null &&
   typeof item === 'object' &&
   Object.prototype.toString.call(item) === '[object Object]'
 
+// From: ChatGPT o3-mini
 export const assign = <T, U>(target: T, source: U): T & U => {
   if (isObject(target) && isObject(source)) {
     const result = { ...target } as Record<string, any>
