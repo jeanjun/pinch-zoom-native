@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.4
+
+### Patch Changes
+
+- Gestures 보정
+
 ## 0.0.3
 
 ### Patch Changes
