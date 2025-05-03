@@ -146,13 +146,17 @@ export const createGestures = (shared: Shared) => {
   const resetToMaxZoom = async () => {
     let { x, y, scale } = shared.camera
     const midPoint = pinchState.midPoint
-  
     const scaleRatio = maxScale / scale
 
     let newX = midPoint.x - (midPoint.x - x) * scaleRatio
     let newY = midPoint.y - (midPoint.y - y) * scaleRatio
 
-    const elementRect = shared.element.getBoundingClientRect()
+    const plainRect = JSON.parse(JSON.stringify(shared.element.getBoundingClientRect())) as DOMRect
+    const elementRect = Object.fromEntries(
+      Object.entries(plainRect)
+      .map(([key, value]) => [key, value * scaleRatio])
+    )
+
     const wrapperRect = shared.wrapper.getBoundingClientRect()
     const gaps = {
       left: elementRect.left > wrapperRect.left,
@@ -166,12 +170,12 @@ export const createGestures = (shared: Shared) => {
       if (gaps.left) {
         newX = 0
       } else if (gaps.right) {
-        newX = wrapperRect.width - (elementRect.width * scaleRatio)
+        newX = wrapperRect.width - elementRect.width
       }
       if (gaps.top) {
         newY = 0
       } else if (gaps.bottom) {
-        newY = wrapperRect.height - (elementRect.height * scaleRatio)
+        newY = wrapperRect.height - elementRect.height
       }
     }
 
