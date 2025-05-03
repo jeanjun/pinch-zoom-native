@@ -22,7 +22,7 @@ export const PinchZoom = ({
       onInstance?.(instance)
 
       return () => {
-        instance.destroy()
+        instance?.destroy()
       }
     }
   }, [options])

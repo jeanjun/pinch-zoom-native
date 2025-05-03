@@ -21,10 +21,10 @@ export const transform = (shared: Shared) => (options: Partial<Options>) => {
       const { x, y, scale } = camera
   
       setStyles(element, {
+        willChange: animate ? 'transform' : '',
+        transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : '',
         transform: `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`,
         transformOrigin: '0 0',
-        willChange: animate ? 'transform' : '',
-        transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : ''
       })
 
       const handleTransitionEnd = () => {
@@ -33,7 +33,7 @@ export const transform = (shared: Shared) => (options: Partial<Options>) => {
         setStyles(element, { willChange: '' })
         resolve()
       }
-  
+
       if (animate) {
         element.addEventListener('transitionend', handleTransitionEnd, { once: true })
       } else {

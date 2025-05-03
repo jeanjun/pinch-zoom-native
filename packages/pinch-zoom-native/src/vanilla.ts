@@ -15,7 +15,7 @@ const createObject = <T extends object, P extends object>(
 
 const createWrapper = (element: HTMLElement, hasScroll: boolean) => {
   const wrapper = document.createElement('div')
-  wrapper.classList.add('zoom-wrapper')
+  wrapper.classList.add('pinch-zoom-native')
 
   if (hasScroll) {
     setStyles(wrapper, {
@@ -38,6 +38,7 @@ export const pinchZoom = (
   options: Partial<PinchZoomOptions> = {}
 ) => {
   const shared = createShared()
+
   shared.wrapper = createWrapper(element, !!options.hasScroll)
   shared.element = element
   shared.options = assign({
@@ -46,7 +47,7 @@ export const pinchZoom = (
     initialScale: 1,
     minScale: 0.125,
     maxScale: 1,
-    maxScalebounce: 2,
+    maxScalebounce: 1.125,
     hasScroll: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},
@@ -69,6 +70,8 @@ export const pinchZoom = (
   }))
 
   const { x, y, initialScale } = shared.options
+  // instance.transform({ x: 0, y: 0, scale: 1.5 })
+
   instance.transform({ x, y, scale: initialScale })
   instance.attachGesture()
 

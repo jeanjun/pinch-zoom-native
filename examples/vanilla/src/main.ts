@@ -9,10 +9,10 @@ const zoom = pinchZoom(document.querySelector('.webtoon')!, {
 })
 
 document.addEventListener('dblclick', () => {
-  zoom.transform({
-    x: -150,
-    y: -400,
-    scale: 2,
-    animate: true
-  })
+  // zoom.transform({
+  //   x: -150,
+  //   y: -400,
+  //   scale: 2,
+  //   animate: true
+  // })
 })

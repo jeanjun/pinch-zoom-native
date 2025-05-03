@@ -51,7 +51,4 @@ export type Shared = {
   isAnimating: boolean
 }
 
-export const createShared = () => ({
-  isZooming: false,
-  isAnimating: false,
-} as Shared)
+export const createShared = () => ({} as Shared)

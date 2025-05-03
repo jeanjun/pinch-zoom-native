@@ -52,6 +52,13 @@ export const createGestures = (shared: Shared) => {
 
   let attached = false
 
+
+
+  const transform = () => {
+    
+  }
+
+
   const onZoomStart = (event: TouchEvent, camera: Camera) => {
     options?.onZoomStart({ nativeEvent: event, camera })
   }
@@ -125,7 +132,6 @@ export const createGestures = (shared: Shared) => {
     })
 
     setStyles(shared.wrapper, { overflow: 'auto' })
-
     const scrollX = midPoint.x - initialScale * relativePoint.x
     const scrollY = midPoint.y - initialScale * relativePoint.y
     shared.wrapper.scrollLeft = Math.abs(scrollX)
@@ -137,16 +143,39 @@ export const createGestures = (shared: Shared) => {
     }
   }
 
-  const resetToMaxZoom = () => {
-    const { x, y, scale } = shared.camera
+  const resetToMaxZoom = async () => {
+    let { x, y, scale } = shared.camera
     const midPoint = pinchState.midPoint
   
     const scaleRatio = maxScale / scale
-  
-    const newX = midPoint.x - (midPoint.x - x) * scaleRatio
-    const newY = midPoint.y - (midPoint.y - y) * scaleRatio
-  
-    return shared.instance.transform({
+
+    let newX = midPoint.x - (midPoint.x - x) * scaleRatio
+    let newY = midPoint.y - (midPoint.y - y) * scaleRatio
+
+    const elementRect = shared.element.getBoundingClientRect()
+    const wrapperRect = shared.wrapper.getBoundingClientRect()
+    const gaps = {
+      left: elementRect.left > wrapperRect.left,
+      right: elementRect.right < wrapperRect.right,
+      top: elementRect.top > wrapperRect.top,
+      bottom: elementRect.bottom < wrapperRect.bottom
+    }
+
+    const hasGaps = gaps.left || gaps.right || gaps.top || gaps.bottom
+    if (hasGaps) {
+      if (gaps.left) {
+        newX = 0
+      } else if (gaps.right) {
+        newX = wrapperRect.width - (elementRect.width * scaleRatio)
+      }
+      if (gaps.top) {
+        newY = 0
+      } else if (gaps.bottom) {
+        newY = wrapperRect.height - (elementRect.height * scaleRatio)
+      }
+    }
+
+    await shared.instance.transform({
       x: newX,
       y: newY,
       scale: maxScale,
@@ -155,9 +184,7 @@ export const createGestures = (shared: Shared) => {
   }
 
   const switchToScrollMode = async () => {
-    const camera = { ...shared.camera }
-    let x = camera.x
-    let y = camera.y
+    let { x, y, scale } = shared.camera
 
     const elementRect = shared.element.getBoundingClientRect()
     const wrapperRect = shared.wrapper.getBoundingClientRect()
@@ -184,7 +211,7 @@ export const createGestures = (shared: Shared) => {
       await shared.instance.transform({
         x,
         y,
-        scale: camera.scale,
+        scale,
         animate: true
       })
     }
@@ -192,13 +219,13 @@ export const createGestures = (shared: Shared) => {
     await shared.instance.transform({
       x: 0,
       y: 0,
-      scale: camera.scale
+      scale
     })
 
     setStyles(shared.wrapper, { overflow: 'auto' })
     shared.wrapper.scrollLeft = Math.abs(x)
     shared.wrapper.scrollTop = Math.abs(y)
-    shared.camera = { x, y, scale: camera.scale }
+    shared.camera = { x, y, scale }
   }
 
   const handleTouchStart = (event: TouchEvent) => {

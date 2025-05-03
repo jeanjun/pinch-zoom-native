@@ -9,9 +9,11 @@ const App = () => {
       <p>&nbsp;</p>
       <p>&nbsp;</p>
       <p>&nbsp;</p>
-      <PinchZoom>
-        <img src="/images/sample.webp" alt="" />
-      </PinchZoom>
+      <div style={{ overflow: 'hidden' }}>
+        <PinchZoom maxScale={3}>
+          <img src="/images/sample.webp" alt="" />
+        </PinchZoom>
+      </div>
     </div>
   )
 }
