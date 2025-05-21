@@ -1,6 +1,6 @@
 {
   "name": "pinch-zoom-native",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -21,8 +21,8 @@
     "url": "https://github.com/jeanjun/pinch-zoom-native.git"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": ">=18.0.0 <20",
+    "react-dom": ">=18.0.0 <20"
   },
   "scripts": {
     "dev": "tsup --watch",

@@ -52,13 +52,6 @@ export const createGestures = (shared: Shared) => {
 
   let attached = false
 
-
-
-  const transform = () => {
-    
-  }
-
-
   const onZoomStart = (event: TouchEvent, camera: Camera) => {
     options?.onZoomStart({ nativeEvent: event, camera })
   }
@@ -366,7 +359,9 @@ export const createGestures = (shared: Shared) => {
   // }
 
   const attachGesture = () => {
-    if (attached) return
+    if (attached) {
+      return
+    }
 
     shared.wrapper.addEventListener('touchstart', handleTouchStart)
     shared.wrapper.addEventListener('touchmove', handleTouchMove)
@@ -384,7 +379,9 @@ export const createGestures = (shared: Shared) => {
   }
 
   const detachGesture = () => {
-    if (!attached) return
+    if (!attached) {
+      return
+    }
 
     shared.wrapper.removeEventListener('touchstart', handleTouchStart)
     shared.wrapper.removeEventListener('touchmove', handleTouchMove)

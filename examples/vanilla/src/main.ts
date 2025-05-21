@@ -8,6 +8,9 @@ const zoom = pinchZoom(document.querySelector('.webtoon')!, {
   hasScroll: true
 })
 
+// @ts-ignore
+window.zoom = zoom
+
 document.addEventListener('dblclick', () => {
   // zoom.transform({
   //   x: -150,

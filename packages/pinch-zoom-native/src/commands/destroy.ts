@@ -1,19 +1,10 @@
-
 import type { Shared } from '../shared'
-
-const removeWrapper = (wrapper: HTMLElement, element: HTMLElement) => {
-  if (wrapper.parentNode) {
-    wrapper.parentNode.insertBefore(element, wrapper)
-    wrapper.parentNode.removeChild(wrapper)
-  }
-
-  return element
-}
 
 export const destroy = (shared: Shared) => () => {
   shared.instance.detachGesture()
-  
+
   const { wrapper, element } = shared
+  element.removeAttribute('style')
   wrapper.parentNode?.insertBefore(element, wrapper)
   wrapper.parentNode?.removeChild(wrapper)
 

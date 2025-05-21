@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.7
+
+### Patch Changes
+
+- peerDependencies react >=18.0.0 <20
+
 ## 0.0.6
 
 ### Patch Changes
