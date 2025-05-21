@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.8
+
+### Patch Changes
+
+- destroy update
+
 ## 0.0.7
 
 ### Patch Changes
