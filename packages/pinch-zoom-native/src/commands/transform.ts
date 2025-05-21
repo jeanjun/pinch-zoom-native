@@ -1,7 +1,7 @@
 import { assign } from '../lib/utils'
 import { setStyles } from '../lib/setStyles'
 
-import type { Shared } from '../shared'
+import type { PinchZoomShared } from '../shared'
 
 type Options = {
   x: number
@@ -10,7 +10,7 @@ type Options = {
   animate?: boolean
 }
 
-export const transform = (shared: Shared) => (options: Partial<Options>) => {
+export const transform = (shared: PinchZoomShared) => (options: Partial<Options>) => {
   return (
     new Promise<void>((resolve) => {
       const { element } = shared

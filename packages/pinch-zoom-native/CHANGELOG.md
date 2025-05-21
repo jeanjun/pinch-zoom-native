@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.9
+
+### Patch Changes
+
+- type pinchZoomShared
+
 ## 0.0.8
 
 ### Patch Changes

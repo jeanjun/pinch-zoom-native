@@ -1,6 +1,6 @@
 import { setStyles } from './lib/setStyles'
 
-import type { Camera, Shared } from './shared'
+import type { Camera, PinchZoomShared } from './shared'
 
 export type Gestures = {
   attachGesture: () => void
@@ -28,7 +28,7 @@ const getMidPoint = (p1: Point, p2: Point): {
 
 const PINCH_POINTER_COUNT = 2
 
-export const createGestures = (shared: Shared) => {
+export const createGestures = (shared: PinchZoomShared) => {
   const { options } = shared
   const {
     initialScale,

@@ -1,6 +1,6 @@
-import type { PinchZoomInstance, Shared } from '../shared'
+import type { PinchZoomInstance, PinchZoomShared } from '../shared'
 
-export const destroy = (shared: Shared) => () => {
+export const destroy = (shared: PinchZoomShared) => () => {
   shared.instance.detachGesture()
 
   const { wrapper, element } = shared
@@ -19,7 +19,7 @@ export const destroy = (shared: Shared) => () => {
   Object
     .getOwnPropertyNames(shared)
     .forEach(key => {
-      delete shared[key as keyof Shared]
+      delete shared[key as keyof PinchZoomShared]
     })
 
   Object.setPrototypeOf(shared, null)  

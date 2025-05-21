@@ -59,6 +59,7 @@ export const pinchZoom = (
     ...createCommands(shared),
     ...createGestures(shared)
   }, {
+    version,
     wrapper: shared.wrapper,
     element,
     get camera () {

@@ -41,7 +41,7 @@ export type PinchZoomInstance = Commands & Gestures & {
   camera: Camera
 }
 
-export type Shared = {
+export type PinchZoomShared = {
   element: HTMLElement
   wrapper: HTMLElement
   options: PinchZoomOptions
@@ -51,4 +51,4 @@ export type Shared = {
   isAnimating: boolean
 }
 
-export const createShared = () => ({} as Shared)
+export const createShared = () => ({} as PinchZoomShared)
