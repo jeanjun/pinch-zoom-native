@@ -1,4 +1,5 @@
 import type { Commands } from './commands/createCommands'
+import { TransformOptions } from './commands/transform'
 import type { Gestures } from './gestures'
 
 export type Camera = {
@@ -49,6 +50,10 @@ export type PinchZoomShared = {
   camera: Camera
   isZooming: boolean
   isAnimating: boolean
+
+  onZoomStart: (options: TransformOptions) => void
+  onZoomUpdate: (options: TransformOptions) => void
+  onZoomEnd: (options: TransformOptions) => void
 }
 
 export const createShared = () => ({} as PinchZoomShared)

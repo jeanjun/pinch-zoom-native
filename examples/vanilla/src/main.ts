@@ -11,11 +11,12 @@ const zoom = pinchZoom(document.querySelector('.webtoon')!, {
 // @ts-ignore
 window.zoom = zoom
 
-document.addEventListener('dblclick', () => {
-  // zoom.transform({
-  //   x: -150,
-  //   y: -400,
-  //   scale: 2,
-  //   animate: true
-  // })
-})
+// document.addEventListener('dblclick', (event) => {
+//   console.log(event)
+//   zoom.transform({
+//     x: -531,
+//     y: -200,
+//     scale: 2.7464700221941434,
+//     animate: true
+//   })
+// })

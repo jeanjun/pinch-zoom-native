@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.10
+
+### Patch Changes
+
+- transform
+
 ## 0.0.9
 
 ### Patch Changes

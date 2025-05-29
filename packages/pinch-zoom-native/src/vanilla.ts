@@ -70,11 +70,10 @@ export const pinchZoom = (
     }
   }))
 
-  const { x, y, initialScale } = shared.options
-  // instance.transform({ x: 0, y: 0, scale: 1.5 })
-
-  instance.transform({ x, y, scale: initialScale })
   instance.attachGesture()
+
+  const { x, y, initialScale } = shared.options
+  instance.transform({ x, y, scale: initialScale })
 
   return instance
 }
