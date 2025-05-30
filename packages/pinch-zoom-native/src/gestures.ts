@@ -61,7 +61,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       shared.camera = assign(shared.camera, camera)
       shared.isAnimating = animate ?? false
 
-      const { x, y, scale } = camera
+      const { x, y, scale } = shared.camera
 
       setStyles(element, {
         willChange: animate ? 'transform' : '',
@@ -281,6 +281,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       scale
     })
 
+    shared.isZooming = false
     setStyles(shared.wrapper, { overflow: 'auto' })
     shared.wrapper.scrollLeft = Math.abs(x)
     shared.wrapper.scrollTop = Math.abs(y)
@@ -427,96 +428,63 @@ export const createGestures = (shared: PinchZoomShared) => {
     if (!(event instanceof CustomEvent)) {
       return
     }
-  
+
+    const currentScrollLeft = shared.wrapper.scrollLeft
+    const currentScrollTop = shared.wrapper.scrollTop
+
+    shared.isZooming = true
+    setStyles(shared.wrapper, { overflow: '' })
+
+    await setTransform({
+      x: -currentScrollLeft,
+      y: -currentScrollTop
+    })
+
+    shared.wrapper.offsetHeight    
+
     const touchEvent = event.detail as TouchEvent
     const touch = touchEvent.changedTouches[0]
     const { clientX, clientY } = touch
   
-    // // 래퍼 기준 터치 좌표 계산
-    // const wrapperRect = shared.wrapper.getBoundingClientRect()
-    // const touchPoint = {
-    //   x: clientX - wrapperRect.left,
-    //   y: clientY - wrapperRect.top
-    // }
+    const currentScale = shared.camera.scale
+    const isZoomedOut = currentScale <= initialScale
   
-    // const currentScale = shared.camera.scale
-    // const isZoomedOut = currentScale <= initialScale * 1.1 // 약간의 여유값
+    if (isZoomedOut) {
+      const scale = Math.min(maxScale, initialScale * 2)
+      const relativePoint = {
+        x: (clientX - shared.camera.x) / shared.camera.scale,
+        y: (clientY - shared.camera.y) / shared.camera.scale
+      }
   
-    // if (isZoomedOut) {
-    //   // 확대: 터치한 지점을 중심으로 2배 확대
-    //   const targetScale = Math.min(maxScale, initialScale * 2)
-      
-    //   // 스크롤 위치 고려한 실제 터치 지점 계산
-    //   const actualTouchX = touchPoint.x + shared.wrapper.scrollLeft
-    //   const actualTouchY = touchPoint.y + shared.wrapper.scrollTop
-      
-    //   // 확대 후 터치 지점이 화면 중앙에 오도록 계산
-    //   const newX = touchPoint.x - actualTouchX * (targetScale / initialScale)
-    //   const newY = touchPoint.y - actualTouchY * (targetScale / initialScale)
-      
-    //   // 스크롤 리셋하고 transform으로 처리
-    //   shared.wrapper.scrollLeft = 0
-    //   shared.wrapper.scrollTop = 0
-      
-    //   await onZoomUpdate(touchEvent, {
-    //     x: newX,
-    //     y: newY,
-    //     scale: targetScale,
-    //     animate: true
-    //   })
-      
-    //   await onZoomEnd(touchEvent, {
-    //     x: newX,
-    //     y: newY,
-    //     scale: targetScale
-    //   })
-    // } else {
-    //   // 축소: 원래 크기로 되돌리면서 자연스럽게 스크롤 모드로 전환
-    //   const { x: currentX, y: currentY } = shared.camera
-      
-    //   // 현재 뷰포트 중앙점을 기준으로 축소 후 스크롤 위치 계산
-    //   const viewportCenterX = wrapperRect.width / 2
-    //   const viewportCenterY = wrapperRect.height / 2
-      
-    //   // 축소 후 해당 지점이 어디에 위치할지 계산
-    //   const contentCenterX = (viewportCenterX - currentX) / currentScale
-    //   const contentCenterY = (viewportCenterY - currentY) / currentScale
-      
-    //   // 스크롤 위치로 변환
-    //   const targetScrollX = contentCenterX * initialScale - viewportCenterX
-    //   const targetScrollY = contentCenterY * initialScale - viewportCenterY
-      
-    //   // 일단 transform으로 축소 애니메이션
-    //   await onZoomUpdate(touchEvent, {
-    //     x: viewportCenterX - contentCenterX * initialScale,
-    //     y: viewportCenterY - contentCenterY * initialScale,
-    //     scale: initialScale,
-    //     animate: true
-    //   })
-      
-    //   // transform 리셋하고 스크롤로 전환
-    //   await setTransform({
-    //     x: 0,
-    //     y: 0,
-    //     scale: initialScale
-    //   })
-      
-    //   shared.wrapper.scrollLeft = Math.max(0, targetScrollX)
-    //   shared.wrapper.scrollTop = Math.max(0, targetScrollY)
-      
-    //   // 카메라 상태 업데이트
-    //   shared.camera = {
-    //     x: -shared.wrapper.scrollLeft,
-    //     y: -shared.wrapper.scrollTop,
-    //     scale: initialScale
-    //   }
-      
-    //   await onZoomEnd(touchEvent, {
-    //     x: shared.camera.x,
-    //     y: shared.camera.y,
-    //     scale: initialScale
-    //   })
-    // }
+      const newX = clientX - scale * relativePoint.x
+      const newY = clientY - scale * relativePoint.y
+
+      await setTransform({
+        x: newX,
+        y: newY,
+        scale,
+        animate: true
+      })
+
+      await switchToScrollMode()
+    } else {
+      const relativePoint = {
+        // x: (clientX - shared.camera.x) / shared.camera.scale,
+        y: (clientY - shared.camera.y) / shared.camera.scale
+      }
+
+      // const newX = clientX - initialScale * relativePoint.x
+      const newY = clientY - initialScale * relativePoint.y
+
+      await setTransform({
+        x: 0,
+        y: newY,
+        scale: initialScale,
+        animate: true
+      })
+
+      await switchToScrollMode()
+    }
   }
 
   const attachGesture = () => {
