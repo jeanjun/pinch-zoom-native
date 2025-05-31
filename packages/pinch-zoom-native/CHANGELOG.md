@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.13
+
+### Patch Changes
+
+- handleDoubleTap
+
 ## 0.0.12
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # example-react
 
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - pinch-zoom-native@0.0.13
+
 ## 0.0.13
 
 ### Patch Changes

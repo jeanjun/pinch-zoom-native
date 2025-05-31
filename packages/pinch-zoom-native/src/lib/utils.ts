@@ -74,4 +74,3 @@ export const detectDoubleTap = (doubleTapMs: number = 300) => {
     }
   }
 }
-

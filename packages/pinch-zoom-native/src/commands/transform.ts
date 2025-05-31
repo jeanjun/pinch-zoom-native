@@ -13,6 +13,6 @@ export type TransformOptions = {
 export const transform = (shared: PinchZoomShared) => async (
   options: Partial<TransformOptions>
 ) => {
-  await shared.onZoomUpdate(options as TransformOptions)
-  await shared.onZoomEnd(options as TransformOptions)
+  await shared.onZoomUpdate?.(options as TransformOptions)
+  await shared.onZoomEnd?.(options as TransformOptions)
 }

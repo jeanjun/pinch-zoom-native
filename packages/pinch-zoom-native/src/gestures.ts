@@ -501,7 +501,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       return
     }
 
-    document.addEventListener('touchend', doubleTapHandler as EventListener)
+    shared.wrapper.addEventListener('touchend', doubleTapHandler as EventListener)
 
     shared.wrapper.addEventListener('touchstart', handleTouchStart)
     shared.wrapper.addEventListener('touchmove', handleTouchMove)
@@ -525,7 +525,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       return
     }
 
-    document.removeEventListener('touchend', doubleTapHandler as EventListener)
+    shared.wrapper.removeEventListener('touchend', doubleTapHandler as EventListener)
 
     shared.wrapper.removeEventListener('doubletap', handleDoubleTap)
     shared.wrapper.removeEventListener('touchstart', handleTouchStart)

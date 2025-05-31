@@ -8,21 +8,21 @@ import { PinchZoom } from '@/components/preview/lazy'
 
 <Wrapper className="relative z-10 flex p-0 overflow-hidden">
   <div className="inline-flex gap-2 overflow-x-auto snap-x snap-mandatory touch-pan-x">
-    <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+    <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
       <PinchZoom maxScale={3}>
         <img src="/swipe-1.jpg" className="!my-0 rounded-lg" />
       </PinchZoom>
     </div>
-    <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+    <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
       <PinchZoom maxScale={3}>
         <img src="/swipe-2.jpg" className="!my-0 rounded-lg" />
       </PinchZoom>
     </div>
-    <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+    <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
       <PinchZoom maxScale={3}>
         <img src="/swipe-3.jpg" className="!my-0 rounded-lg" />
       </PinchZoom>
-    </div>    
+    </div>
   </div>
 </Wrapper>
 
@@ -30,21 +30,21 @@ import { PinchZoom } from '@/components/preview/lazy'
 import { PinchZoom } from 'pinch-zoom-native'
 
 <div className="inline-flex gap-2 overflow-x-auto snap-x snap-mandatory">
-  <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+  <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
     <PinchZoom maxScale={3}>
       <img src="/image-1.jpg" />
     </PinchZoom>
   </div>
-  <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+  <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
     <PinchZoom maxScale={3}>
       <img src="/image-2.jpg" />
     </PinchZoom>
   </div>
-  <div className="w-full flex-shrink-0 snap-center overflow-hidden">
+  <div className="w-full flex-shrink-0 snap-start snap-always overflow-hidden">
     <PinchZoom maxScale={3}>
       <img src="/image-3.jpg" />
     </PinchZoom>
-  </div>    
+  </div>
 </div>
 
 ```
