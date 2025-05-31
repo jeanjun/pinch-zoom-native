@@ -444,7 +444,16 @@ export const createGestures = (shared: PinchZoomShared) => {
 
     const touchEvent = event.detail as TouchEvent
     const touch = touchEvent.changedTouches[0]
-    const { clientX, clientY } = touch
+    const touchPoint = {
+      x: touch.clientX,
+      y: touch.clientY
+    }
+
+    if (!options.hasScroll) {
+      const wrapperRect = shared.wrapper.getBoundingClientRect()
+      touchPoint.x = touch.clientX - wrapperRect.left
+      touchPoint.y = touch.clientY - wrapperRect.top
+    }
   
     const currentScale = shared.camera.scale
     const isZoomedOut = currentScale <= initialScale
@@ -452,12 +461,12 @@ export const createGestures = (shared: PinchZoomShared) => {
     if (isZoomedOut) {
       const scale = Math.min(maxScale, initialScale * 2)
       const relativePoint = {
-        x: (clientX - shared.camera.x) / shared.camera.scale,
-        y: (clientY - shared.camera.y) / shared.camera.scale
+        x: (touchPoint.x - shared.camera.x) / shared.camera.scale,
+        y: (touchPoint.y - shared.camera.y) / shared.camera.scale
       }
   
-      const newX = clientX - scale * relativePoint.x
-      const newY = clientY - scale * relativePoint.y
+      const newX = touchPoint.x - scale * relativePoint.x
+      const newY = touchPoint.y - scale * relativePoint.y
 
       await setTransform({
         x: newX,
@@ -469,16 +478,16 @@ export const createGestures = (shared: PinchZoomShared) => {
       await switchToScrollMode()
     } else {
       const relativePoint = {
-        // x: (clientX - shared.camera.x) / shared.camera.scale,
-        y: (clientY - shared.camera.y) / shared.camera.scale
+        // x: (touchPoint.x - shared.camera.x) / shared.camera.scale,
+        y: (touchPoint.y - shared.camera.y) / shared.camera.scale
       }
 
-      // const newX = clientX - initialScale * relativePoint.x
-      const newY = clientY - initialScale * relativePoint.y
+      // const newX = touchPoint.x - initialScale * relativePoint.x
+      const newY = touchPoint.y - initialScale * relativePoint.y
 
       await setTransform({
         x: 0,
-        y: newY,
+        y: options.hasScroll ? newY : 0,
         scale: initialScale,
         animate: true
       })

@@ -1,5 +1,12 @@
 # example-vanilla
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - pinch-zoom-native@0.0.12
+
 ## 0.0.12
 
 ### Patch Changes
