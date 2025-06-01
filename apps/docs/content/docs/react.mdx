@@ -45,13 +45,13 @@ import { PinchZoom } from 'pinch-zoom-native'
       type: 'number',
       default: '0'
     },
-    scale: {
+    initialScale: {
       type: 'number',
       default: 1
     },
     minScale: {
       type: 'number',
-      default: 1
+      default: 0.125
     },
     maxScale: {
       type: 'number',
@@ -59,8 +59,20 @@ import { PinchZoom } from 'pinch-zoom-native'
     },
     maxScalebounce: {
       type: 'number',
+      default: 1.125
+    },
+    doubleTap: {
+      type: 'boolean',
+      default: 'true'
+    },
+    doubleTapScale: {
+      type: 'number',
       default: 2
     },
+    hasScroll: {
+      type: 'boolean',
+      default: 'false'
+    },    
     onInstance: {
       type: 'function',
       typeDescription: '(instance: PinchZoomInstance) => void',

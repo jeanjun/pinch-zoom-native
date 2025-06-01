@@ -23,54 +23,75 @@ export const assign = <T, U>(target: T, source: U): T & U => {
 }
 
 // From: ChatGPT 4o
-export const detectDoubleTap = (doubleTapMs: number = 300) => {
+export const detectDoubleTap = (doubleTapMs: number = 500) => {
   let lastTapTime = 0
   let lastTarget: EventTarget | null = null
-  let waitingForFirstTap = true
+  let timeoutId: NodeJS.Timeout | null = null
 
   return (event: TouchEvent) => {
     const now = Date.now()
     const target = event.target
 
-    if (!(target instanceof HTMLElement)) return
+    if (!(target instanceof HTMLElement)) {
+      return
+    }
 
-    if (waitingForFirstTap) {
-      // 첫 번째 탭 저장
+    const timeDiff = now - lastTapTime
+
+    if (
+      lastTapTime > 0 &&
+      timeDiff > 0 &&
+      timeDiff < doubleTapMs &&
+      target === lastTarget
+    ) {
+      // 더블탭 확정!
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+
+      // 상태 즉시 리셋 (바로 다음 더블탭 받을 수 있도록)
+      lastTapTime = 0
+      lastTarget = null
+
+      const doubleTapEvent = new CustomEvent('doubletap', {
+        bubbles: true,
+        detail: event
+      })
+
+      target.dispatchEvent(doubleTapEvent)
+    } else {
+      // 첫 번째 탭이거나 시간/타겟이 맞지 않음
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+
       lastTapTime = now
       lastTarget = target
-      waitingForFirstTap = false
 
-      setTimeout(() => {
-        // 일정 시간 후 첫 번째 탭 리셋
-        waitingForFirstTap = true
+      // doubleTapMs 후에 첫 번째 탭 리셋
+      timeoutId = setTimeout(() => {
+        lastTapTime = 0
+        lastTarget = null
+        timeoutId = null
       }, doubleTapMs)
-    } else {
-      const timeDiff = now - lastTapTime
-
-      if (
-        timeDiff > 0 &&
-        timeDiff < doubleTapMs &&
-        target === lastTarget
-      ) {
-        // 더블탭 확정
-        waitingForFirstTap = true // 반드시 처음부터 다시 탭해야 함
-
-        const doubleTapEvent = new CustomEvent('doubletap', {
-          bubbles: true,
-          detail: event
-        })
-
-        target.dispatchEvent(doubleTapEvent)
-      } else {
-        // 타이밍이 틀렸거나 다른 요소를 탭함 → 다시 처음부터
-        lastTapTime = now
-        lastTarget = target
-        waitingForFirstTap = false
-
-        setTimeout(() => {
-          waitingForFirstTap = true
-        }, doubleTapMs)
-      }
     }
+  }
+}
+
+export const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    timeoutId = setTimeout(() => {
+      func(...args)
+    }, wait)
   }
 }

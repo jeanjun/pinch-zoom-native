@@ -28,6 +28,8 @@ export type PinchZoomOptions = {
   minScale: number
   maxScale: number
   maxScalebounce: number
+  doubleTap: boolean
+  doubleTapScale: number
   hasScroll: boolean
   x: number 
   y: number

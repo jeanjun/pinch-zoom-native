@@ -48,6 +48,8 @@ export const pinchZoom = (
     minScale: 0.125,
     maxScale: 1,
     maxScalebounce: 1.125,
+    doubleTap: true,
+    doubleTapScale: 2,
     hasScroll: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},

@@ -1,10 +1,10 @@
 {
   "name": "docs",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "rm -rf .next && next dev --turbo",
     "start": "next start",
     "postinstall": "fumadocs-mdx"
   },

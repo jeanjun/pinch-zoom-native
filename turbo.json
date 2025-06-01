@@ -11,6 +11,5 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {}
-  },
-  "ui": "tui"
+  }
 }
