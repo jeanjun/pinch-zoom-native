@@ -18,5 +18,5 @@ yarn add pinch-zoom-native
 ```bash
 pnpm i
 pnpm dev # Run all workspaces
-pnpm dev --ws docs # Run a specific workspace and its dependencies
+pnpm dev --select docs # Run a specific workspace and its dependencies
 ```
