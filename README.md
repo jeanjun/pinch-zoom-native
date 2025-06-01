@@ -2,6 +2,18 @@
 
 🖼️ 🔍 pinch-zoom-native is a library that enables natural image zoom in/out gestures.
 
+## Install
+```bash
+# Using pnpm
+pnpm add pinch-zoom-native
+
+# Using npm
+npm install pinch-zoom-native
+
+# Using yarn
+yarn add pinch-zoom-native
+```
+
 ## Setup and Running
 ```bash
 pnpm i
