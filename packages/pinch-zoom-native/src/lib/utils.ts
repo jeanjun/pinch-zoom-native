@@ -23,7 +23,7 @@ export const assign = <T, U>(target: T, source: U): T & U => {
 }
 
 // From: ChatGPT 4o
-export const detectDoubleTap = (doubleTapMs: number = 500) => {
+export const detectDoubleTap = (doubleTapMs: number = 300) => {
   let lastTapTime = 0
   let lastTarget: EventTarget | null = null
   let timeoutId: NodeJS.Timeout | null = null

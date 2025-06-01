@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.15
+
+### Patch Changes
+
+- doubleTapMs 300
+
 ## 0.0.14
 
 ### Patch Changes
