@@ -1,6 +1,6 @@
 import { pinchZoom } from 'pinch-zoom-native'
 
-const zoom = pinchZoom(document.querySelector('.webtoon')!, {
+const zoom = pinchZoom(document.querySelector('img')!, {
   onZoomStart: () => {},
   onZoomUpdate: () => {},
   onZoomEnd: () => {},

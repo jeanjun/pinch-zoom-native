@@ -13,33 +13,12 @@ const createObject = <T extends object, P extends object>(
   Object.create(proto, Object.getOwnPropertyDescriptors(props))
 )
 
-const createWrapper = (element: HTMLElement, hasScroll: boolean) => {
-  const wrapper = document.createElement('div')
-  wrapper.classList.add('pinch-zoom-native')
-
-  if (hasScroll) {
-    setStyles(wrapper, {
-      height: '100%',
-      overflow: 'auto'
-    })
-  }
-
-  if (element.parentNode) {
-    element.parentNode.insertBefore(wrapper, element)
-  }
-
-  wrapper.appendChild(element)
-
-  return wrapper
-}
-
 export const pinchZoom = (
   element: HTMLElement,
   options: Partial<PinchZoomOptions> = {}
 ) => {
   const shared = createShared()
 
-  shared.wrapper = createWrapper(element, !!options.hasScroll)
   shared.element = element
   shared.options = assign({
     x: 0,
@@ -48,6 +27,7 @@ export const pinchZoom = (
     minScale: 0.125,
     maxScale: 1,
     maxScalebounce: 1.125,
+    disableGesture: false,
     doubleTap: true,
     doubleTapScale: 2,
     hasScroll: false,
@@ -62,20 +42,24 @@ export const pinchZoom = (
     ...createGestures(shared)
   }, {
     version,
-    wrapper: shared.wrapper,
     element,
     get camera () {
       return shared.camera
     },
     set camera (v: Camera) {
       warn('camera 속성은 직접 수정할 수 없습니다. transform 메서드를 사용해 주세요.')
+    },
+    get options () {
+      return shared.options
+    },
+    set options (v: PinchZoomOptions) {
+      warn('options 속성은 직접 수정할 수 없습니다.')
     }
   }))
 
   instance.attachGesture()
-
-  const { x, y, initialScale } = shared.options
-  instance.transform({ x, y, scale: initialScale })
+  // const { x, y, initialScale } = shared.options
+  // instance.transform({ x, y, scale: initialScale })
 
   return instance
 }
