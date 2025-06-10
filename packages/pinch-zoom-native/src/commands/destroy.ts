@@ -3,10 +3,10 @@ import type { PinchZoomInstance, PinchZoomShared } from '../shared'
 export const destroy = (shared: PinchZoomShared) => () => {
   shared.instance.detachGesture()
 
-  const { wrapper, element } = shared
+  const { element } = shared
   element.removeAttribute('style')
-  wrapper.parentNode?.insertBefore(element, wrapper)
-  wrapper.parentNode?.removeChild(wrapper)
+  // wrapper.parentNode?.insertBefore(element, wrapper)
+  // wrapper.parentNode?.removeChild(wrapper)
 
   Object
     .getOwnPropertyNames(shared.instance)

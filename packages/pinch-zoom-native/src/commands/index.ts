@@ -1,4 +1,4 @@
-export * from './setTransform'
+export * from './setCamera'
 export * from './disableDoubleTap'
 export * from './enableDoubleTap'
 export * from './enableGesture'

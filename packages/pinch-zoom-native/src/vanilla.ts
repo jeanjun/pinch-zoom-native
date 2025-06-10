@@ -1,7 +1,7 @@
 import { version } from '.'
 import { assign } from './lib/utils'
 import { createCommands } from './commands/createCommands'
-import { Camera, createShared, type PinchZoomInstance, type PinchZoomOptions } from './shared'
+import { createShared, type Camera, type PinchZoomInstance, type PinchZoomOptions } from './shared'
 import { createGestures } from './gestures'
 import { warn } from './lib/warn'
 import { setStyles } from './lib/setStyles'
@@ -47,7 +47,7 @@ export const pinchZoom = (
       return shared.camera
     },
     set camera (v: Camera) {
-      warn('camera 속성은 직접 수정할 수 없습니다. transform 메서드를 사용해 주세요.')
+      warn('camera 속성은 직접 수정할 수 없습니다. setTransform 메서드를 사용해 주세요.')
     },
     get options () {
       return shared.options

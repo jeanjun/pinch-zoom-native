@@ -1,3 +1,5 @@
+import type { Camera } from '../shared'
+
 // From: ChatGPT o3-mini
 const isObject = (item: unknown): item is Record<string, unknown> =>
   item !== null &&
@@ -94,4 +96,34 @@ export const debounce = <T extends (...args: any[]) => any>(
       func(...args)
     }, wait)
   }
+}
+
+type Point = {
+  x: number
+  y: number
+}
+
+export const getDistance = (p1: Point, p2: Point): number => {
+  const dx = p2.x - p1.x
+  const dy = p2.y - p1.y
+  return Math.hypot(dx, dy)
+}
+
+export const getMidPoint = (p1: Point, p2: Point): {
+  x: number
+  y: number
+} => ({
+  x: (p1.x + p2.x) / 2,
+  y: (p1.y + p2.y) / 2
+})
+
+export const getRelativePoint = (point: Point, camera: Camera): Point => {
+  return {
+    x: (point.x - camera.x) / camera.scale,
+    y: (point.y - camera.y) / camera.scale
+  }
+}
+
+export const isFunction = (func: unknown): func is Function => {
+  return typeof func === 'function'
 }

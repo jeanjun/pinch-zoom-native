@@ -1,5 +1,4 @@
 import type { Commands } from './commands/createCommands'
-import { TransformOptions } from './commands/setTransform'
 import type { Gestures } from './gestures'
 
 export type Camera = {
@@ -10,15 +9,15 @@ export type Camera = {
 
 export namespace zoomEvents {
   export type zoomStart = {
-    nativeEvent: TouchEvent
+    nativeEvent: PointerEvent
     camera: Camera
   }
   export type zoomUpdate = {
-    nativeEvent: TouchEvent
+    nativeEvent: PointerEvent
     camera: Camera
   }
   export type zoomEnd = {
-    nativeEvent: TouchEvent
+    nativeEvent: PointerEvent
     camera: Camera
   }
 }
@@ -41,22 +40,16 @@ export type PinchZoomOptions = {
 
 export type PinchZoomInstance = Commands & Gestures & {
   element: HTMLElement
-  wrapper: HTMLElement
   camera: Camera
 }
 
 export type PinchZoomShared = {
   element: HTMLElement
-  wrapper: HTMLElement
   options: PinchZoomOptions
   instance: PinchZoomInstance
   camera: Camera
-  isZooming: boolean
   isAnimating: boolean
-
-  onZoomStart: (options: TransformOptions) => void
-  onZoomUpdate: (options: TransformOptions) => void
-  onZoomEnd: (options: TransformOptions) => void
+  isZooming: boolean
 }
 
 export const createShared = () => ({

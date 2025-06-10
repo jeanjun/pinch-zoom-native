@@ -4,22 +4,14 @@
 }
 
 body {
-  touch-action: none;
-  overflow: hidden;
 }
-
 
 img {
   max-width: 100%;
   vertical-align: top;
 }
 
-.webtoon {
-  max-width: 690px;
-  margin: 0 auto;
-}
-
-.pinch-zoom-native {
-  position: fixed;
-  inset: 0;
+.zoom-container {
+  width: fit-content;
+  overflow: auto;
 }
