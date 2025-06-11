@@ -9,15 +9,15 @@ export type Camera = {
 
 export namespace zoomEvents {
   export type zoomStart = {
-    nativeEvent: PointerEvent
+    nativeEvent: TouchEvent
     camera: Camera
   }
   export type zoomUpdate = {
-    nativeEvent: PointerEvent
+    nativeEvent: TouchEvent
     camera: Camera
   }
   export type zoomEnd = {
-    nativeEvent: PointerEvent
+    nativeEvent: TouchEvent
     camera: Camera
   }
 }
