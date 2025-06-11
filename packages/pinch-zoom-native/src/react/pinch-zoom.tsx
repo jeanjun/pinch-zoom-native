@@ -1,5 +1,10 @@
-import { useEffect, useRef, useState, cloneElement, isValidElement } from 'react'
 import { pinchZoom } from '../vanilla'
+import {
+  useLayoutEffect,
+  useRef,
+  cloneElement,
+  isValidElement,
+} from 'react'
 
 import type { PinchZoomOptions } from '../shared'
 
@@ -16,16 +21,18 @@ export const PinchZoom = ({
 }: PinchZoomProps) => {
   const childRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    if (childRef.current) {
-      const instance = pinchZoom(childRef.current, options)
-      onInstance?.(instance)
+  useLayoutEffect(() => {
+    const child = childRef.current
 
-      return () => {
-        instance?.destroy()
-      }
+    if (!child || !child.isConnected) return
+
+    const instance = pinchZoom(child, options)
+    onInstance?.(instance)
+
+    return () => {
+      instance?.destroy()
     }
-  }, [options])
+  }, [])
 
   if (isValidElement(children)) {
     return cloneElement(children, { ref: childRef } as any)

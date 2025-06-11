@@ -1,5 +1,17 @@
 # pinch-zoom-native
 
+## 0.0.18
+
+### Patch Changes
+
+- childRef
+
+## 0.0.17
+
+### Patch Changes
+
+- hasScroll
+
 ## 0.0.16
 
 ### Patch Changes

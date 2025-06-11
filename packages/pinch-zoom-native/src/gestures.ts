@@ -101,8 +101,10 @@ export const createGestures = (shared: PinchZoomShared) => {
       ...camera
     }: TransformOptions
   ) => {
-    hasScroll = shared.wrapper.scrollTop > 0 || shared.wrapper.scrollLeft > 0
-
+    const wrapperHeight = shared.wrapper.clientHeight
+    const elementHeight = shared.element.clientHeight / shared.camera.scale
+    hasScroll = elementHeight > wrapperHeight
+    
     setStyles(shared.wrapper, {
       touchAction: 'none'
     })
@@ -470,12 +472,10 @@ export const createGestures = (shared: PinchZoomShared) => {
     if (disableDoubleTap) {
       return
     }
-
     const touchEvent = event.detail as TouchEvent
     const currentScrollLeft = shared.wrapper.scrollLeft
     const currentScrollTop = shared.wrapper.scrollTop
 
-    hasScroll = shared.wrapper.scrollTop > 0 || shared.wrapper.scrollLeft > 0
     shared.isZooming = true
     setStyles(shared.wrapper, { overflow: '' })
 
@@ -491,7 +491,9 @@ export const createGestures = (shared: PinchZoomShared) => {
       }
     })
 
-    shared.wrapper.offsetHeight    
+    const wrapperHeight = shared.wrapper.clientHeight
+    const elementHeight = shared.element.clientHeight / shared.camera.scale
+    hasScroll = elementHeight > wrapperHeight
 
     const touch = touchEvent.changedTouches[0]
     const touchPoint = {

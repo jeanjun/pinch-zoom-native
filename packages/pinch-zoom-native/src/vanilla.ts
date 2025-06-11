@@ -32,6 +32,8 @@ export const pinchZoom = (
 ) => {
   const shared = createShared()
 
+  console.log('?')
+
   shared.wrapper = createWrapper(element)
   shared.element = element
   shared.options = assign({

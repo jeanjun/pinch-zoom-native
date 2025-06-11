@@ -2,7 +2,7 @@ import { PinchZoom } from 'pinch-zoom-native'
 
 const App = () => {
   return (
-    <div className="app" style={{ height: '100dvh', touchAction: 'none' }}>
+    <div className="app">
       <p>&nbsp;</p>
       <p>&nbsp;</p>
       <p>&nbsp;</p>
