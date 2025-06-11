@@ -52,6 +52,7 @@ export const createGestures = (shared: PinchZoomShared) => {
   //   lastY: 0
   // }
 
+  let hasScroll = false
   let attached = false
 
   let disableDoubleTap = false
@@ -100,6 +101,8 @@ export const createGestures = (shared: PinchZoomShared) => {
       ...camera
     }: TransformOptions
   ) => {
+    hasScroll = shared.wrapper.scrollTop > 0 || shared.wrapper.scrollLeft > 0
+
     setStyles(shared.wrapper, {
       touchAction: 'none'
     })
@@ -123,6 +126,9 @@ export const createGestures = (shared: PinchZoomShared) => {
     setStyles(shared.wrapper, {
       overflow: ''
     })
+
+    disableDoubleTap = true
+    enableDoubleTap()
 
     await setTransform({
       animate,
@@ -157,6 +163,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       await switchToScrollMode()
     }
 
+    hasScroll = false
     shared.isZooming = false
     setStyles(shared.wrapper, {
       touchAction: '',
@@ -169,7 +176,7 @@ export const createGestures = (shared: PinchZoomShared) => {
   }
 
   const resetToMinZoom = async () => {
-    if (!options.hasScroll) {
+    if (!hasScroll) {
       await setTransform({
         x: 0,
         y: 0,
@@ -468,12 +475,20 @@ export const createGestures = (shared: PinchZoomShared) => {
     const currentScrollLeft = shared.wrapper.scrollLeft
     const currentScrollTop = shared.wrapper.scrollTop
 
+    hasScroll = shared.wrapper.scrollTop > 0 || shared.wrapper.scrollLeft > 0
     shared.isZooming = true
     setStyles(shared.wrapper, { overflow: '' })
 
     await setTransform({
       x: -currentScrollLeft,
       y: -currentScrollTop
+    })
+
+    options?.onZoomStart({
+      nativeEvent: event,
+      camera: {
+        ...shared.camera
+      }
     })
 
     shared.wrapper.offsetHeight    
@@ -484,7 +499,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       y: touch.clientY
     }
 
-    if (!options.hasScroll) {
+    if (!hasScroll) {
       const wrapperRect = shared.wrapper.getBoundingClientRect()
       touchPoint.x = touch.clientX - wrapperRect.left
       touchPoint.y = touch.clientY - wrapperRect.top
@@ -522,13 +537,20 @@ export const createGestures = (shared: PinchZoomShared) => {
 
       await setTransform({
         x: 0,
-        y: options.hasScroll ? newY : 0,
+        y: hasScroll ? newY : 0,
         scale: initialScale,
         animate: true
       })
 
       await switchToScrollMode()
     }
+
+    options?.onZoomEnd({
+      nativeEvent: event,
+      camera: {
+        ...shared.camera
+      }
+    })
   }
 
   const attachGesture = () => {

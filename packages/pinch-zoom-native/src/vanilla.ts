@@ -13,16 +13,9 @@ const createObject = <T extends object, P extends object>(
   Object.create(proto, Object.getOwnPropertyDescriptors(props))
 )
 
-const createWrapper = (element: HTMLElement, hasScroll: boolean) => {
+const createWrapper = (element: HTMLElement) => {
   const wrapper = document.createElement('div')
   wrapper.classList.add('pinch-zoom-native')
-
-  if (hasScroll) {
-    setStyles(wrapper, {
-      height: '100%',
-      overflow: 'auto'
-    })
-  }
 
   if (element.parentNode) {
     element.parentNode.insertBefore(wrapper, element)
@@ -39,7 +32,7 @@ export const pinchZoom = (
 ) => {
   const shared = createShared()
 
-  shared.wrapper = createWrapper(element, !!options.hasScroll)
+  shared.wrapper = createWrapper(element)
   shared.element = element
   shared.options = assign({
     x: 0,
@@ -50,7 +43,6 @@ export const pinchZoom = (
     maxScalebounce: 1.125,
     doubleTap: true,
     doubleTapScale: 2,
-    hasScroll: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},
     onZoomEnd: () => {}
