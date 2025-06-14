@@ -3,6 +3,30 @@ import { setStyles } from './lib/setStyles'
 import type { Camera, PinchZoomShared } from './shared'
 import type { TransformOptions } from './commands/transform'
 import { assign, debounce, detectDoubleTap } from './lib/utils'
+import BezierEasing from 'bezier-easing'
+
+// const ease = BezierEasing(0.32, 0.72, 0, 1)
+
+// const animateHeight = (wrapper: HTMLElement, from: number, to: number, duration = 500) => {
+//   const start = performance.now()
+
+//   const loop = (now: number) => {
+//     const elapsed = now - start
+//     const progress = Math.min(elapsed / duration, 1)
+//     const eased = ease(progress)
+//     const current = from + (to - from) * eased
+
+//     wrapper.style.height = `${Math.floor(current)}px`
+
+//     if (progress < 1) {
+//       requestAnimationFrame(loop)
+//     } else {
+//       wrapper.style.height = `${Math.floor(to)}px` // 마지막 보정
+//     }
+//   }
+
+//   requestAnimationFrame(loop)
+// }
 
 export type Gestures = {
   attachGesture: () => void
@@ -55,6 +79,9 @@ export const createGestures = (shared: PinchZoomShared) => {
   let hasScroll = false
   let attached = false
 
+  let startWrapperRect: DOMRect | null = null
+  let startElementRect: DOMRect | null = null  
+
   let disableDoubleTap = false
   const enableDoubleTap = debounce(() => {
     disableDoubleTap = false
@@ -73,7 +100,7 @@ export const createGestures = (shared: PinchZoomShared) => {
         willChange: animate ? 'transform' : '',
         transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : '',
         transform: `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`,
-        transformOrigin: '0 0',
+        transformOrigin: '0 0'
       })
 
       const handleTransitionEnd = () => {
@@ -101,10 +128,12 @@ export const createGestures = (shared: PinchZoomShared) => {
       ...camera
     }: TransformOptions
   ) => {
-    const wrapperHeight = shared.wrapper.clientHeight
-    const elementHeight = shared.element.clientHeight / shared.camera.scale
+    startWrapperRect = shared.wrapper.getBoundingClientRect()
+    startElementRect = shared.element.getBoundingClientRect()
+    const wrapperHeight = startWrapperRect.height
+    const elementHeight = startElementRect.height / shared.camera.scale
     hasScroll = elementHeight > wrapperHeight
-    
+
     setStyles(shared.wrapper, {
       touchAction: 'none'
     })
@@ -137,6 +166,22 @@ export const createGestures = (shared: PinchZoomShared) => {
       ...camera
     })
 
+    // v2에서 다시 정리
+    if (shared.options.fitOnZoom && camera.scale > 1) {
+      setTimeout(() => {
+        const height = Math.floor(startElementRect!.height * camera.scale)
+        setStyles(shared.wrapper, {
+          height: height + 'px',
+          maxHeight: '100%'
+        })
+      }, 25)
+    } else {
+      setStyles(shared.wrapper, {
+        height: '',
+        maxHeight: ''
+      })
+    }
+
     if (event) {
       options?.onZoomUpdate({ nativeEvent: event, camera })
     }
@@ -167,6 +212,12 @@ export const createGestures = (shared: PinchZoomShared) => {
 
     hasScroll = false
     shared.isZooming = false
+
+    if (camera.scale === initialScale) {
+      startWrapperRect = null
+      startElementRect = null
+    }
+
     setStyles(shared.wrapper, {
       touchAction: '',
       overflow: 'auto'
@@ -262,7 +313,9 @@ export const createGestures = (shared: PinchZoomShared) => {
     })
   }
 
-  const switchToScrollMode = async () => {
+  const switchToScrollMode = async (
+    options: { skipGaps: boolean } = { skipGaps: false }
+  ) => {
     let { x, y, scale } = shared.camera
 
     const elementRect = shared.element.getBoundingClientRect()
@@ -275,7 +328,7 @@ export const createGestures = (shared: PinchZoomShared) => {
     }
 
     const hasGaps = gaps.left || gaps.right || gaps.top || gaps.bottom
-    if (hasGaps) {
+    if (hasGaps && !options.skipGaps) {
       if (gaps.left) {
         x = 0
       } else if (gaps.right) {
@@ -460,6 +513,8 @@ export const createGestures = (shared: PinchZoomShared) => {
 
   // const doubleTapHandler = detectDoubleTap()
 
+  let isDoubleTap = false
+
   const handleDoubleTap = async (event: Event) => {
     if (!(event instanceof CustomEvent)) {
       return
@@ -472,6 +527,9 @@ export const createGestures = (shared: PinchZoomShared) => {
     if (disableDoubleTap) {
       return
     }
+
+    isDoubleTap = true
+
     const touchEvent = event.detail as TouchEvent
     const currentScrollLeft = shared.wrapper.scrollLeft
     const currentScrollTop = shared.wrapper.scrollTop
@@ -484,15 +542,18 @@ export const createGestures = (shared: PinchZoomShared) => {
       y: -currentScrollTop
     })
 
-    options?.onZoomStart({
-      nativeEvent: event,
-      camera: {
-        ...shared.camera
-      }
-    })
+    // options?.onZoomStart({
+    //   nativeEvent: event,
+    //   camera: {
+    //     ...shared.camera
+    //   }
+    // })
 
-    const wrapperHeight = shared.wrapper.clientHeight
-    const elementHeight = shared.element.clientHeight / shared.camera.scale
+    startWrapperRect = shared.wrapper.getBoundingClientRect()
+    startElementRect = shared.element.getBoundingClientRect()
+    
+    const wrapperHeight = startWrapperRect.height
+    const elementHeight = startElementRect.height / shared.camera.scale
     hasScroll = elementHeight > wrapperHeight
 
     const touch = touchEvent.changedTouches[0]
@@ -512,22 +573,44 @@ export const createGestures = (shared: PinchZoomShared) => {
   
     if (isZoomedOut) {
       const scale = Math.min(maxScale, options.doubleTapScale)
+
       const relativePoint = {
         x: (touchPoint.x - shared.camera.x) / shared.camera.scale,
         y: (touchPoint.y - shared.camera.y) / shared.camera.scale
       }
-  
+
       const newX = touchPoint.x - scale * relativePoint.x
       const newY = touchPoint.y - scale * relativePoint.y
 
-      await setTransform({
-        x: newX,
-        y: newY,
-        scale,
-        animate: true
-      })
+      if (options.fitOnZoom) {
+        const viewportHeight = window.innerHeight
+        const offset = (viewportHeight - startElementRect.height) / 2
+        const isTapNearTop = touchPoint.y < viewportHeight / 2
 
-      await switchToScrollMode()
+        await setTransform({
+          x: newX,
+          y: isTapNearTop ? newY - offset : newY + offset,
+          scale,
+          animate: true
+        })
+
+        const height = Math.floor(startElementRect!.height * Math.min(maxScale, options.doubleTapScale))
+        setStyles(shared.wrapper, {
+          height: `${height}px`,
+          maxHeight: '100%'
+        })
+
+        shared.camera.y += offset        
+      } else {
+        await setTransform({
+          x: newX,
+          y: newY,
+          scale,
+          animate: true
+        })
+      }
+
+      await switchToScrollMode({ skipGaps: true })
     } else {
       const relativePoint = {
         // x: (touchPoint.x - shared.camera.x) / shared.camera.scale,
@@ -537,22 +620,41 @@ export const createGestures = (shared: PinchZoomShared) => {
       // const newX = touchPoint.x - initialScale * relativePoint.x
       const newY = touchPoint.y - initialScale * relativePoint.y
 
-      await setTransform({
-        x: 0,
-        y: hasScroll ? newY : 0,
-        scale: initialScale,
-        animate: true
-      })
+      if (options.fitOnZoom) {
+        const viewportHeight = window.innerHeight
+        const offset = (viewportHeight - (startElementRect.height / shared.camera.scale)) / 2      
+  
+        await setTransform({
+          x: 0,
+          y: hasScroll ? newY : offset,
+          scale: initialScale,
+          animate: true
+        })
+  
+        setStyles(shared.wrapper, {
+          height: '',
+          maxHeight: ''
+        })
+      } else {
+        await setTransform({
+          x: 0,
+          y: newY,
+          scale: initialScale,
+          animate: true
+        })        
+      }
 
-      await switchToScrollMode()
+      await switchToScrollMode({ skipGaps: true })
     }
 
-    options?.onZoomEnd({
-      nativeEvent: event,
-      camera: {
-        ...shared.camera
-      }
-    })
+    // options?.onZoomEnd({
+    //   nativeEvent: event,
+    //   camera: {
+    //     ...shared.camera
+    //   }
+    // })
+
+    isDoubleTap = false
   }
 
   const attachGesture = () => {

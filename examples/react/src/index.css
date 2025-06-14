@@ -9,9 +9,14 @@ html, body {
 
 img {
   max-width: 100%;
+  max-height: 100dvh;
+  width: 100%;
   vertical-align: top;
+  object-fit: contain;
 }
 
 .pinch-zoom-native {
-  background-color: #eee;
+  width: 100%;
+  /* max-height: unset;
+  height: 100%;   */
 }

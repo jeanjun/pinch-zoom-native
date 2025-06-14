@@ -30,7 +30,8 @@ export type PinchZoomOptions = {
   maxScalebounce: number
   doubleTap: boolean
   doubleTapScale: number
-  x: number 
+  fitOnZoom: boolean
+  x: number
   y: number
   onZoomStart: (event: zoomEvents.zoomStart) => void
   onZoomUpdate: (event: zoomEvents.zoomUpdate) => void

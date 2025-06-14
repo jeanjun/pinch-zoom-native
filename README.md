@@ -2,6 +2,8 @@
 
 🖼️ 🔍 pinch-zoom-native is a library that enables natural image zoom in/out gestures.
 
+## 🚧 Work in progress
+
 ## Install
 ```bash
 # Using pnpm

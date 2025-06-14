@@ -23,9 +23,11 @@ export const assign = <T, U>(target: T, source: U): T & U => {
 }
 
 // From: ChatGPT 4o
-export const detectDoubleTap = (doubleTapMs: number = 300) => {
+export const detectDoubleTap = (doubleTapMs: number = 300, maxDistance: number = 30) => {
   let lastTapTime = 0
   let lastTarget: EventTarget | null = null
+  let lastTouchX = 0
+  let lastTouchY = 0
   let timeoutId: NodeJS.Timeout | null = null
 
   return (event: TouchEvent) => {
@@ -36,23 +38,28 @@ export const detectDoubleTap = (doubleTapMs: number = 300) => {
       return
     }
 
-    const timeDiff = now - lastTapTime
+    const touch = event.changedTouches[0]
+    const x = touch.clientX
+    const y = touch.clientY
 
-    if (
-      lastTapTime > 0 &&
-      timeDiff > 0 &&
-      timeDiff < doubleTapMs &&
-      target === lastTarget
-    ) {
+    const timeDiff = now - lastTapTime
+    const distance = Math.hypot(x - lastTouchX, y - lastTouchY)
+
+    const isQuick = lastTapTime > 0 && timeDiff > 0 && timeDiff < doubleTapMs
+    const isSameTarget = target === lastTarget
+    const isCloseEnough = distance < maxDistance
+
+    if (isQuick && isSameTarget && isCloseEnough) {
       // 더블탭 확정!
       if (timeoutId) {
         clearTimeout(timeoutId)
         timeoutId = null
       }
 
-      // 상태 즉시 리셋 (바로 다음 더블탭 받을 수 있도록)
       lastTapTime = 0
       lastTarget = null
+      lastTouchX = 0
+      lastTouchY = 0
 
       const doubleTapEvent = new CustomEvent('doubletap', {
         bubbles: true,
@@ -61,15 +68,15 @@ export const detectDoubleTap = (doubleTapMs: number = 300) => {
 
       target.dispatchEvent(doubleTapEvent)
     } else {
-      // 첫 번째 탭이거나 시간/타겟이 맞지 않음
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
 
       lastTapTime = now
       lastTarget = target
+      lastTouchX = x
+      lastTouchY = y
 
-      // doubleTapMs 후에 첫 번째 탭 리셋
       timeoutId = setTimeout(() => {
         lastTapTime = 0
         lastTarget = null

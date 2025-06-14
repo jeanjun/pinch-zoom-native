@@ -32,8 +32,6 @@ export const pinchZoom = (
 ) => {
   const shared = createShared()
 
-  console.log('?')
-
   shared.wrapper = createWrapper(element)
   shared.element = element
   shared.options = assign({
@@ -45,6 +43,7 @@ export const pinchZoom = (
     maxScalebounce: 1.125,
     doubleTap: true,
     doubleTapScale: 2,
+    fitOnZoom: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},
     onZoomEnd: () => {}
