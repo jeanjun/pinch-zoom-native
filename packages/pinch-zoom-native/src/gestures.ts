@@ -2,7 +2,7 @@ import { setStyles } from './lib/setStyles'
 
 import type { Camera, PinchZoomShared } from './shared'
 import type { TransformOptions } from './commands/transform'
-import { assign, debounce, detectDoubleTap } from './lib/utils'
+import { assign, debounce, detectDoubleTap, detectTaps } from './lib/utils'
 import BezierEasing from 'bezier-easing'
 
 // const ease = BezierEasing(0.32, 0.72, 0, 1)
@@ -70,6 +70,8 @@ export const createGestures = (shared: PinchZoomShared) => {
     relativePoint: { x: 0, y: 0 },
   }
 
+  let touchStartPos: { x: number, y: number } | null = null
+
   // const dragState = {
   //   isDragging: false,
   //   lastX: 0,
@@ -78,7 +80,7 @@ export const createGestures = (shared: PinchZoomShared) => {
 
   let hasScroll = false
   let attached = false
-
+  
   let startWrapperRect: DOMRect | null = null
   let startElementRect: DOMRect | null = null  
 
@@ -167,20 +169,20 @@ export const createGestures = (shared: PinchZoomShared) => {
     })
 
     // v2에서 다시 정리
-    if (shared.options.fitOnZoom && camera.scale > 1) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (shared.options.fitOnZoom && camera.scale > 1) {
         const height = Math.floor(startElementRect!.height * camera.scale)
         setStyles(shared.wrapper, {
           height: height + 'px',
           maxHeight: '100%'
         })
-      }, 25)
-    } else {
-      setStyles(shared.wrapper, {
-        height: '',
-        maxHeight: ''
-      })
-    }
+      } else {
+        setStyles(shared.wrapper, {
+          height: '',
+          maxHeight: ''
+        })
+      }
+    }, 25)
 
     if (event) {
       options?.onZoomUpdate({ nativeEvent: event, camera })
@@ -363,6 +365,9 @@ export const createGestures = (shared: PinchZoomShared) => {
   }
 
   const handleTouchStart = (event: TouchEvent) => {
+    const touch = event.touches[0]
+    touchStartPos = { x: touch.clientX, y: touch.clientY }
+
     const touches = Array.from(event.touches)
     if (touches.length >= PINCH_POINTER_COUNT) {
       const wrapperRect = shared.wrapper.getBoundingClientRect()
@@ -501,9 +506,21 @@ export const createGestures = (shared: PinchZoomShared) => {
   //   })
   // }
 
-  const doubleTapHandler = (() => {
-    const handler = detectDoubleTap()
+  const tapHandler = (() => {
+    const handler = detectTaps(options.doubleTapMs)
     return (event: TouchEvent) => {
+      if (!touchStartPos) {
+        return
+      }
+
+      const touch = event.changedTouches[0]
+      const moveDistance = Math.hypot(
+        touch.clientX - touchStartPos.x,
+        touch.clientY - touchStartPos.y
+      )
+  
+      if (moveDistance > 10) return 
+
       const target = event.target as HTMLElement
       if (shared.wrapper.contains(target)) {
         handler(event)
@@ -511,9 +528,23 @@ export const createGestures = (shared: PinchZoomShared) => {
     }
   })()
 
-  // const doubleTapHandler = detectDoubleTap()
+  const handleSingleTap = async (event: Event) => {
+    if (!(event instanceof CustomEvent)) {
+      return
+    }
 
-  let isDoubleTap = false
+    if (!options.doubleTap) {
+      return
+    }
+
+    if (disableDoubleTap) {
+      return
+    }
+
+    if (options.onSingleTap) {
+      options.onSingleTap({ nativeEvent: event })
+    }
+  }
 
   const handleDoubleTap = async (event: Event) => {
     if (!(event instanceof CustomEvent)) {
@@ -528,7 +559,9 @@ export const createGestures = (shared: PinchZoomShared) => {
       return
     }
 
-    isDoubleTap = true
+    if (options.onDoubleTap) {
+      options.onDoubleTap({ nativeEvent: event })
+    }
 
     const touchEvent = event.detail as TouchEvent
     const currentScrollLeft = shared.wrapper.scrollLeft
@@ -653,8 +686,6 @@ export const createGestures = (shared: PinchZoomShared) => {
     //     ...shared.camera
     //   }
     // })
-
-    isDoubleTap = false
   }
 
   const attachGesture = () => {
@@ -662,12 +693,13 @@ export const createGestures = (shared: PinchZoomShared) => {
       return
     }
 
-    document.addEventListener('touchend', doubleTapHandler)
+    document.addEventListener('touchend', tapHandler)
 
     shared.wrapper.addEventListener('touchstart', handleTouchStart)
     shared.wrapper.addEventListener('touchmove', handleTouchMove)
     shared.wrapper.addEventListener('touchend', handleTouchEnd)
 
+    shared.wrapper.addEventListener('singletap', handleSingleTap)
     shared.wrapper.addEventListener('doubletap', handleDoubleTap)
 
     // shared.wrapper.addEventListener('mousedown', handleMouseDown)
@@ -686,12 +718,13 @@ export const createGestures = (shared: PinchZoomShared) => {
       return
     }
 
-    document.removeEventListener('touchend', doubleTapHandler)
+    document.removeEventListener('touchend', tapHandler)
 
     shared.wrapper.removeEventListener('touchstart', handleTouchStart)
     shared.wrapper.removeEventListener('touchmove', handleTouchMove)
     shared.wrapper.removeEventListener('touchend', handleTouchEnd)
 
+    shared.wrapper.removeEventListener('singletap', handleSingleTap)
     shared.wrapper.removeEventListener('doubletap', handleDoubleTap)
 
     // shared.wrapper.removeEventListener('mousedown', handleMouseDown)

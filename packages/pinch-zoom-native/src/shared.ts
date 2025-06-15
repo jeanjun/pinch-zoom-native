@@ -21,6 +21,12 @@ export namespace zoomEvents {
     nativeEvent: TouchEvent | CustomEvent
     camera: Camera
   }
+  export type singleTap = {
+    nativeEvent: TouchEvent | CustomEvent
+  }
+  export type doubleTap = {
+    nativeEvent: TouchEvent | CustomEvent
+  }
 }
 
 export type PinchZoomOptions = {
@@ -30,18 +36,22 @@ export type PinchZoomOptions = {
   maxScalebounce: number
   doubleTap: boolean
   doubleTapScale: number
+  doubleTapMs: number
   fitOnZoom: boolean
   x: number
   y: number
   onZoomStart: (event: zoomEvents.zoomStart) => void
   onZoomUpdate: (event: zoomEvents.zoomUpdate) => void
   onZoomEnd: (event: zoomEvents.zoomEnd) => void
+  onSingleTap: (event: zoomEvents.singleTap) => void
+  onDoubleTap: (event: zoomEvents.doubleTap) => void
 }
 
 export type PinchZoomInstance = Commands & Gestures & {
   element: HTMLElement
   wrapper: HTMLElement
   camera: Camera
+  options: PinchZoomOptions
 }
 
 export type PinchZoomShared = {

@@ -1,22 +1,40 @@
 import { PinchZoom } from 'pinch-zoom-native'
+import { useEffect } from 'react'
 
 const App = () => {
+  useEffect(() => {
+    const handleCustomSingleTap = () => {
+      console.log('단일탭')
+    }
+
+    document.addEventListener('single-tap', handleCustomSingleTap)
+
+    return () => {
+      document.removeEventListener('single-tap', handleCustomSingleTap)
+    }
+  }, [])
+
   return (
-    // <div className="app">
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <p>&nbsp;</p>
-    //   <div style={{ overflow: 'hidden' }}>
-    //     <PinchZoom maxScale={3}>
-    //       <img src="/images/sample.webp" alt="" />
-    //     </PinchZoom>
-    //   </div>
-    // </div>
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh', overflow: 'hidden' }}>
-      <PinchZoom maxScale={3} fitOnZoom={true}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100dvh',
+        overflow: 'hidden',
+      }}
+    >
+      <PinchZoom
+        maxScale={3}
+        fitOnZoom={true}
+        doubleTap={true}
+        onSingleTap={() => {
+          document.dispatchEvent(new Event('single-tap'))
+        }}
+        onDoubleTap={() => {
+          console.log('더블탭')
+        }}
+      >
         <img src="/images/resource.jpg" alt="" />
       </PinchZoom>
     </div>

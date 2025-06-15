@@ -86,6 +86,83 @@ export const detectDoubleTap = (doubleTapMs: number = 300, maxDistance: number =
   }
 }
 
+export const detectTaps = (doubleTapMs: number = 300, maxDistance: number = 30) => {
+  let lastTapTime = 0
+  let lastTarget: EventTarget | null = null
+  let lastTouchX = 0
+  let lastTouchY = 0
+  let singleTapTimeoutId: NodeJS.Timeout | null = null
+
+  return (event: TouchEvent) => {
+    const now = Date.now()
+    const target = event.target
+
+    if (!(target instanceof HTMLElement)) {
+      return
+    }
+
+    const touch = event.changedTouches[0]
+    const x = touch.clientX
+    const y = touch.clientY
+
+    const timeDiff = now - lastTapTime
+    const distance = Math.hypot(x - lastTouchX, y - lastTouchY)
+
+    const isQuick = lastTapTime > 0 && timeDiff > 0 && timeDiff < doubleTapMs
+    const isSameTarget = target === lastTarget
+    const isCloseEnough = distance < maxDistance
+
+    if (isQuick && isSameTarget && isCloseEnough) {
+      // 더블탭 확정!
+      if (singleTapTimeoutId) {
+        clearTimeout(singleTapTimeoutId)
+        singleTapTimeoutId = null
+      }
+
+      lastTapTime = 0
+      lastTarget = null
+      lastTouchX = 0
+      lastTouchY = 0
+
+      const doubleTapEvent = new CustomEvent('doubletap', {
+        bubbles: true,
+        detail: event
+      })
+
+      target.dispatchEvent(doubleTapEvent)
+    } else {
+      // 첫 번째 탭이거나 더블탭 조건에 맞지 않는 경우
+      if (singleTapTimeoutId) {
+        clearTimeout(singleTapTimeoutId)
+      }
+
+      lastTapTime = now
+      lastTarget = target
+      lastTouchX = x
+      lastTouchY = y
+
+      // 단일탭 대기 타이머 설정
+      singleTapTimeoutId = setTimeout(() => {
+        // doubleTapMs 시간이 지나도 더블탭이 없으면 단일탭으로 처리
+        const singleTapEvent = new CustomEvent('singletap', {
+          bubbles: true,
+          detail: event
+        })
+
+        if (lastTarget) {
+          lastTarget.dispatchEvent(singleTapEvent)
+        }
+
+        lastTapTime = 0
+        lastTarget = null
+        lastTouchX = 0
+        lastTouchY = 0
+        singleTapTimeoutId = null
+      }, doubleTapMs)
+    }
+  }
+}
+
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number

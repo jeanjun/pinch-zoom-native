@@ -43,10 +43,13 @@ export const pinchZoom = (
     maxScalebounce: 1.125,
     doubleTap: true,
     doubleTapScale: 2,
+    doubleTapMs: 300,
     fitOnZoom: false,
     onZoomStart: () => {},
     onZoomUpdate: () => {},
-    onZoomEnd: () => {}
+    onZoomEnd: () => {},
+    onSingleTap: () => {},
+    onDoubleTap: () => {}
   }, options)
 
   // Object.create 사용은 단순, 고수준 API와 저수준 API를 구분하기 위한 의미가 큼.
@@ -62,6 +65,9 @@ export const pinchZoom = (
     },
     set camera (v: Camera) {
       warn('camera 속성은 직접 수정할 수 없습니다. transform 메서드를 사용해 주세요.')
+    },
+    get options () {
+      return shared.options
     }
   }))
 
