@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.20
+
+### Patch Changes
+
+- viewportHeight
+
 ## 0.0.19
 
 ### Patch Changes
