@@ -7,16 +7,16 @@ export type Camera = {
   scale: number
 }
 
-export namespace zoomEvents {
-  export type zoomStart = {
+export namespace ZoomEvents {
+  export type ZoomStart = {
     nativeEvent: TouchEvent
     camera: Camera
   }
-  export type zoomUpdate = {
+  export type ZoomUpdate = {
     nativeEvent: TouchEvent
     camera: Camera
   }
-  export type zoomEnd = {
+  export type ZoomEnd = {
     nativeEvent: TouchEvent
     camera: Camera
   }
@@ -33,9 +33,9 @@ export type PinchZoomOptions = {
   hasScroll: boolean
   x: number 
   y: number
-  onZoomStart: (event: zoomEvents.zoomStart) => void
-  onZoomUpdate: (event: zoomEvents.zoomUpdate) => void
-  onZoomEnd: (event: zoomEvents.zoomEnd) => void
+  onZoomStart: (event: ZoomEvents.ZoomStart) => void
+  onZoomUpdate: (event: ZoomEvents.ZoomUpdate) => void
+  onZoomEnd: (event: ZoomEvents.ZoomEnd) => void
 }
 
 export type PinchZoomInstance = Commands & Gestures & {

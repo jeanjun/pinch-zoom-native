@@ -19,7 +19,6 @@ export const createGestures = (shared: PinchZoomShared) => {
   } = shared
 
   const parent = element.parentElement!
-  const pointers: PointerEvent[] = []
 
   let startCamera: Camera
   let startRelativePoint: Point
@@ -31,8 +30,6 @@ export const createGestures = (shared: PinchZoomShared) => {
   const handleTouchDown = (event: TouchEvent) => {
     const touches = Array.from(event.touches)
     if (touches.length > 1) {
-      event.preventDefault()
-
       parent.style.touchAction = 'none'
       parent.scrollLeft = 0
       parent.scrollTop = 0
@@ -50,7 +47,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       startMidPoint = getMidPoint(point1, point2)
       startRelativePoint = getRelativePoint(startMidPoint, startCamera)
 
-      shared.instance.setCamera(startCamera)
+      // shared.instance.setCamera(startCamera)
 
       if (isFunction(options.onZoomStart)) {
         options.onZoomStart({ nativeEvent: event, camera: startCamera })
@@ -63,8 +60,6 @@ export const createGestures = (shared: PinchZoomShared) => {
   const handleTouchMove = (event: TouchEvent) => {
     const touches = Array.from(event.touches)
     if (touches.length > 1) {
-      event.preventDefault()
-
       const [pointer1, pointer2] = touches
       const point1 = { x: pointer1.clientX - originRect.left, y: pointer1.clientY - originRect.top }
       const point2 = { x: pointer2.clientX - originRect.left, y: pointer2.clientY - originRect.top }
@@ -96,6 +91,10 @@ export const createGestures = (shared: PinchZoomShared) => {
   }
 
   const handleTouchUp = async (event: TouchEvent) => {
+    if (shared.isAnimating) {
+      return
+    }
+
     if (shared.isZooming) {
       const camera = shared.camera
 
@@ -176,7 +175,8 @@ export const createGestures = (shared: PinchZoomShared) => {
 
   const resetToMinZoom = async () => {
     isScrollMode = false
-    await shared.instance.setCamera({
+
+    return shared.instance.setCamera({
       x: 0,
       y: 0,
       scale: options.initialScale,
@@ -186,7 +186,8 @@ export const createGestures = (shared: PinchZoomShared) => {
 
   const resetToMaxZoom = async () => {
     isScrollMode = false
-    await shared.instance.setCamera({
+
+    return shared.instance.setCamera({
       x: 0,
       y: 0,
       scale: options.maxScale,
@@ -204,9 +205,7 @@ export const createGestures = (shared: PinchZoomShared) => {
     }
   }
 
-  const handleScrolled = debounce((event: Event) => {
-    element.focus()
-  }, 250)
+  const handleScrolled = debounce((event: Event) => element.focus(), 250)
 
   const attachGesture = () => {
     parent.addEventListener('scroll', handleScroll)

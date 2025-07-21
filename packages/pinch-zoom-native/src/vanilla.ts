@@ -4,7 +4,6 @@ import { createCommands } from './commands/createCommands'
 import { createShared, type Camera, type PinchZoomInstance, type PinchZoomOptions } from './shared'
 import { createGestures } from './gestures'
 import { warn } from './lib/warn'
-import { setStyles } from './lib/setStyles'
 
 const createObject = <T extends object, P extends object>(
   proto: T,

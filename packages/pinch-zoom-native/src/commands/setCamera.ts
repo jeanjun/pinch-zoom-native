@@ -7,26 +7,38 @@ export type CameraOptions = Camera & {
   animate?: boolean
 }
 
-export const setCamera = (shared: PinchZoomShared) => async ({
+export const setCamera = (shared: PinchZoomShared) => ({
   animate = false,
   ...props
 }: Partial<CameraOptions>) => {
-  const camera = assign(shared.camera, props)
-  shared.camera = camera  
-  shared.isAnimating = animate
-  shared.isZooming = true
+  return new Promise<void>((resolve) => {
+    const camera = assign(shared.camera, props)
+    shared.camera = camera  
+    shared.isAnimating = animate
+    shared.isZooming = true
 
-  const { element } = shared
-  setStyles(element, {
-    willChange: animate ? 'transform' : '',
-    transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : '',
-    transform: `matrix(${camera.scale}, 0, 0, ${camera.scale}, ${camera.x}, ${camera.y})`,
-    transformOrigin: '0 0'
-  })
+    const { element } = shared
+    setStyles(element, {
+      // willChange: animate ? 'transform' : '',
+      transition: animate ? 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' : '',
+      transform: `matrix(${camera.scale}, 0, 0, ${camera.scale}, ${camera.x}, ${camera.y})`,
+      transformOrigin: '0 0'
+    })
 
-  if (animate) {
-    element.addEventListener('transitionend', () => {
+    const handleTransitionEnd = () => {
+      element.removeEventListener('transitionend', handleTransitionEnd)
       shared.isAnimating = false
-    }, { once: true })
-  }
+      setStyles(element, {
+        willChange: ''
+      })
+      
+      resolve()
+    }
+  
+    if (animate) {
+      element.addEventListener('transitionend', handleTransitionEnd, { once: true })
+    } else {
+      resolve()
+    }
+  })
 }
