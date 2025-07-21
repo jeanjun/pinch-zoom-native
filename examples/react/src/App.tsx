@@ -1,19 +1,6 @@
 import { PinchZoom } from 'pinch-zoom-native'
-import { useEffect } from 'react'
 
 const App = () => {
-  useEffect(() => {
-    const handleCustomSingleTap = () => {
-      console.log('단일탭')
-    }
-
-    document.addEventListener('single-tap', handleCustomSingleTap)
-
-    return () => {
-      document.removeEventListener('single-tap', handleCustomSingleTap)
-    }
-  }, [])
-
   return (
     <div
       style={{
@@ -29,10 +16,13 @@ const App = () => {
         fitOnZoom={true}
         doubleTap={true}
         onSingleTap={() => {
-          document.dispatchEvent(new Event('single-tap'))
+          console.log('단일탭')
         }}
         onDoubleTap={() => {
           console.log('더블탭')
+        }}
+        onInstance={(instance) => {
+          console.log(instance)
         }}
       >
         <img src="/images/resource.jpg" alt="" />

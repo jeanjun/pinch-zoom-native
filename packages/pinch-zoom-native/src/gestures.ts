@@ -1,32 +1,8 @@
 import { setStyles } from './lib/setStyles'
 
-import type { Camera, PinchZoomShared } from './shared'
+import type { PinchZoomShared } from './shared'
 import type { TransformOptions } from './commands/transform'
 import { assign, debounce, detectDoubleTap, detectTaps } from './lib/utils'
-import BezierEasing from 'bezier-easing'
-
-// const ease = BezierEasing(0.32, 0.72, 0, 1)
-
-// const animateHeight = (wrapper: HTMLElement, from: number, to: number, duration = 500) => {
-//   const start = performance.now()
-
-//   const loop = (now: number) => {
-//     const elapsed = now - start
-//     const progress = Math.min(elapsed / duration, 1)
-//     const eased = ease(progress)
-//     const current = from + (to - from) * eased
-
-//     wrapper.style.height = `${Math.floor(current)}px`
-
-//     if (progress < 1) {
-//       requestAnimationFrame(loop)
-//     } else {
-//       wrapper.style.height = `${Math.floor(to)}px` // 마지막 보정
-//     }
-//   }
-
-//   requestAnimationFrame(loop)
-// }
 
 export type Gestures = {
   attachGesture: () => void
@@ -616,7 +592,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       const newY = touchPoint.y - scale * relativePoint.y
 
       if (options.fitOnZoom) {
-        const viewportHeight = window.innerHeight
+        const viewportHeight = shared.wrapper.parentElement?.clientHeight ?? window.innerHeight
         const offset = (viewportHeight - startElementRect.height) / 2
         const isTapNearTop = touchPoint.y < viewportHeight / 2
 
@@ -654,7 +630,7 @@ export const createGestures = (shared: PinchZoomShared) => {
       const newY = touchPoint.y - initialScale * relativePoint.y
 
       if (options.fitOnZoom) {
-        const viewportHeight = window.innerHeight
+        const viewportHeight = shared.wrapper.parentElement?.clientHeight ?? window.innerHeight
         const offset = (viewportHeight - (startElementRect.height / shared.camera.scale)) / 2      
   
         await setTransform({

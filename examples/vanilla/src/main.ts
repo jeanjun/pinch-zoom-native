@@ -5,7 +5,6 @@ const zoom = pinchZoom(document.querySelector('.webtoon')!, {
   onZoomUpdate: () => {},
   onZoomEnd: () => {},
   maxScale: 3,
-  hasScroll: true,
   doubleTap: true,
   doubleTapScale: 2
 })
