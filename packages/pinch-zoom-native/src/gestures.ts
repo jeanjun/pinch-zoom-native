@@ -146,7 +146,11 @@ export const createGestures = (shared: PinchZoomShared) => {
 
     // v2에서 다시 정리
     setTimeout(() => {
-      if (shared.options.fitOnZoom && camera.scale > 1) {
+      if (!shared.wrapper) {
+        return
+      }
+      
+      if (shared.options?.fitOnZoom && camera.scale > 1) {
         const height = Math.floor(startElementRect!.height * camera.scale)
         setStyles(shared.wrapper, {
           height: height + 'px',
@@ -551,13 +555,6 @@ export const createGestures = (shared: PinchZoomShared) => {
       y: -currentScrollTop
     })
 
-    // options?.onZoomStart({
-    //   nativeEvent: event,
-    //   camera: {
-    //     ...shared.camera
-    //   }
-    // })
-
     startWrapperRect = shared.wrapper.getBoundingClientRect()
     startElementRect = shared.element.getBoundingClientRect()
     
@@ -576,13 +573,12 @@ export const createGestures = (shared: PinchZoomShared) => {
       touchPoint.x = touch.clientX - wrapperRect.left
       touchPoint.y = touch.clientY - wrapperRect.top
     }
-  
+
     const currentScale = shared.camera.scale
     const isZoomedOut = currentScale <= initialScale
   
     if (isZoomedOut) {
       const scale = Math.min(maxScale, options.doubleTapScale)
-
       const relativePoint = {
         x: (touchPoint.x - shared.camera.x) / shared.camera.scale,
         y: (touchPoint.y - shared.camera.y) / shared.camera.scale
