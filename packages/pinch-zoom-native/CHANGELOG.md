@@ -1,5 +1,11 @@
 # pinch-zoom-native
 
+## 0.0.23
+
+### Patch Changes
+
+- zoom bug
+
 ## 0.0.22
 
 ### Patch Changes

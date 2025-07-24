@@ -9,7 +9,7 @@ html, body {
 
 img {
   max-width: 100%;
-  max-height: 50dvh;
+  max-height: 100dvh;
   width: 100%;
   vertical-align: top;
   object-fit: contain;

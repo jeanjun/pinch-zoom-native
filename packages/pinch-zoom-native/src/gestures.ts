@@ -588,22 +588,32 @@ export const createGestures = (shared: PinchZoomShared) => {
       const newY = touchPoint.y - scale * relativePoint.y
 
       if (options.fitOnZoom) {
+        const maxTapScale = Math.min(maxScale, options.doubleTapScale)
+        const scaledHeight = Math.floor(startElementRect.height * maxTapScale)
+        
         const viewportHeight = shared.wrapper.parentElement?.clientHeight ?? window.innerHeight
         const offset = (viewportHeight - startElementRect.height) / 2
+        
+        let y: number
         const isTapNearTop = touchPoint.y < viewportHeight / 2
-        const height = Math.floor(startElementRect.height * Math.min(maxScale, options.doubleTapScale))
+        
+        if (scaledHeight <= viewportHeight) {
+          // 화면보다 작으면 중앙 정렬
+          y = -offset + (viewportHeight - scaledHeight) / 2
+        } else {
+          // 터치 위치에 따라 위 또는 아래 기준으로 정렬
+          y = isTapNearTop ? newY - offset : newY + offset
+        }
 
         await setTransform({
           x: newX,
-          y: height <= viewportHeight 
-            ? -offset 
-            : isTapNearTop ? newY - offset : newY + offset,
+          y,
           scale,
           animate: true
         })
 
         setStyles(shared.wrapper, {
-          height: `${height}px`,
+          height: `${scaledHeight}px`,
           maxHeight: '100%'
         })        
 
