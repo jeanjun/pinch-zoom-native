@@ -13,6 +13,7 @@ const App = () => {
     >
       <PinchZoom
         maxScale={3}
+        doubleTapScale={2}
         fitOnZoom={true}
         doubleTap={true}
         onSingleTap={() => {

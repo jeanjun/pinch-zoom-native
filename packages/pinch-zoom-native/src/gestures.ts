@@ -591,19 +591,21 @@ export const createGestures = (shared: PinchZoomShared) => {
         const viewportHeight = shared.wrapper.parentElement?.clientHeight ?? window.innerHeight
         const offset = (viewportHeight - startElementRect.height) / 2
         const isTapNearTop = touchPoint.y < viewportHeight / 2
+        const height = Math.floor(startElementRect.height * Math.min(maxScale, options.doubleTapScale))
 
         await setTransform({
           x: newX,
-          y: isTapNearTop ? newY - offset : newY + offset,
+          y: height <= viewportHeight 
+            ? -offset 
+            : isTapNearTop ? newY - offset : newY + offset,
           scale,
           animate: true
         })
 
-        const height = Math.floor(startElementRect!.height * Math.min(maxScale, options.doubleTapScale))
         setStyles(shared.wrapper, {
           height: `${height}px`,
           maxHeight: '100%'
-        })
+        })        
 
         shared.camera.y += offset        
       } else {
@@ -627,7 +629,7 @@ export const createGestures = (shared: PinchZoomShared) => {
 
       if (options.fitOnZoom) {
         const viewportHeight = shared.wrapper.parentElement?.clientHeight ?? window.innerHeight
-        const offset = (viewportHeight - (startElementRect.height / shared.camera.scale)) / 2      
+        const offset = (viewportHeight - (startElementRect.height / shared.camera.scale)) / 2
   
         await setTransform({
           x: 0,
@@ -643,21 +645,14 @@ export const createGestures = (shared: PinchZoomShared) => {
       } else {
         await setTransform({
           x: 0,
-          y: newY,
+          y: hasScroll ? newY : 0,
           scale: initialScale,
           animate: true
-        })        
+        })
       }
 
       await switchToScrollMode({ skipGaps: true })
     }
-
-    // options?.onZoomEnd({
-    //   nativeEvent: event,
-    //   camera: {
-    //     ...shared.camera
-    //   }
-    // })
   }
 
   const attachGesture = () => {
